@@ -8,6 +8,7 @@
 namespace SnapCode\Hooks;
 
 use SnapCode\Core\BasePlugin;
+use SnapCode\Core\Request;
 
 /**
  * Class AdminMenu
@@ -37,6 +38,7 @@ class AdminMenu extends BasePlugin {
 			$parent_slug,
 			array( $this, 'show_wp_tinker_page' ),
 			'dashicons-editor-code',
+			5
 		);
 	}
 
@@ -46,8 +48,8 @@ class AdminMenu extends BasePlugin {
 	 * @return void
 	 */
 	public function show_wp_tinker_page() {
-		if ( isset( $_GET['view'] ) ) {
-			$view      = sanitize_text_field( wp_unslash( $_GET['view'] ) );
+		if ( Request::has( 'view' ) ) {
+			$view      = Request::get( 'view' );
 			$view_path = $this->view_dir . "/$view.php";
 			if ( file_exists( $view_path ) ) {
 				include_once $view_path;

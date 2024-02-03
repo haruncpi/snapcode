@@ -13,16 +13,14 @@ use SnapCode\Core\Request;
  * Class TinkerController
  */
 class TinkerController {
+
 	/**
-	 * Register hooks.
+	 * Define constant if not defined.
 	 */
 	public function __construct() {
 		if ( ! defined( 'SAVEQUERIES' ) ) {
 			define( 'SAVEQUERIES', true );
 		}
-
-		add_action( 'wp_ajax_wptinker_output', array( $this, 'get_output' ) );
-		add_action( 'wp_ajax_wptinker_save_config', array( $this, 'save_config' ) );
 	}
 
 	/**

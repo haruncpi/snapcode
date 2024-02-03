@@ -7,8 +7,8 @@
 
 namespace SnapCode;
 
-use SnapCode\Controllers\TinkerController;
 use SnapCode\Hooks\AdminMenu;
+use SnapCode\Hooks\Ajax;
 use SnapCode\Hooks\Assets;
 
 /**
@@ -49,6 +49,6 @@ class Plugin {
 	private function bootstrap() {
 		new AdminMenu();
 		new Assets();
-		new TinkerController();
+		new Ajax();
 	}
 }
