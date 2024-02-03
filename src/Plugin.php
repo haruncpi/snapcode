@@ -10,6 +10,7 @@ namespace SnapCode;
 use SnapCode\Hooks\AdminMenu;
 use SnapCode\Hooks\Ajax;
 use SnapCode\Hooks\Assets;
+use SnapCode\Updater\Updater;
 
 /**
  * Class Plugin
@@ -50,5 +51,6 @@ class Plugin {
 		new AdminMenu();
 		new Assets();
 		new Ajax();
+		new Updater();
 	}
 }
