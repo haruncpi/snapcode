@@ -1,0 +1,82 @@
+@font-face {
+  font-family: "FiraCode";
+  font-weight: normal;
+  font-style: normal;
+  src: url("../fonts/FiraCode-Regular.ttf") format("truetype");
+}
+.wp-tinker-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-right: 15px;
+}
+.wptinker-wrapper {
+  display: flex;
+  height: 100%;
+}
+.wptinker-wrapper .input {
+  min-width: 50%;
+  position: relative;
+}
+.wptinker-wrapper .input button {
+  position: absolute;
+  top: 13px;
+  right: 5px;
+  background: #ffc107;
+  color: black;
+  border-color: #9b886c;
+}
+.wptinker-wrapper .input textarea {
+  background: #ddd;
+  padding: 15px;
+  height: calc(100vh - 150px);
+}
+.wptinker-wrapper .input textarea:focus {
+  box-shadow: none;
+}
+.wptinker-wrapper .output {
+  flex-grow: 1;
+  margin-left: 20px;
+  overflow: auto;
+}
+.wptinker-wrapper .output .tabs {
+  display: flex;
+  gap: 10px;
+  margin-top: 13px;
+}
+.wptinker-wrapper .output .tabs > div {
+  padding: 6px 8px;
+  cursor: pointer;
+  background: #ddd;
+  border-radius: 4px;
+}
+.wptinker-wrapper .output .tabs .active {
+  background: #3f51b5;
+  color: white;
+}
+.wptinker-wrapper .output .sql-query-wrapper {
+  margin-bottom: 15px;
+}
+.wptinker-wrapper .output pre {
+  margin-top: 10px;
+  overflow: scroll;
+  width: 97%;
+}
+.wptinker-wrapper .output .query-info .query-copy {
+  padding: 1px 6px;
+  display: inline-block;
+  background: #c7c2c2;
+  border-radius: 3px;
+  color: #333;
+  font-size: 13px;
+  cursor: pointer;
+}
+.wptinker-wrapper .output .query-info .query-time {
+  background: #cad8ba;
+  padding: 2px 5px;
+  border-radius: 4px;
+}
+.wptinker-wrapper .output pre,
+.wptinker-wrapper .input textarea {
+  font-family: "FiraCode" !important;
+}

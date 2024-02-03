@@ -1,0 +1,97 @@
+@font-face {
+  font-family: "FiraCode";
+  font-weight: normal;
+  font-style: normal;
+  src: url("../fonts/FiraCode-Regular.ttf") format("truetype");
+}
+
+.wp-tinker-header{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-right: 15px;
+}
+
+.wptinker-wrapper {
+  display: flex;
+  height: 100%;
+
+  .input {
+    min-width: 50%;
+    position: relative;
+    button {
+      position: absolute;
+      top: 13px;
+      right: 5px;
+      background: #ffc107;
+      color: black;
+      border-color: #9b886c;
+    }
+  }
+
+  .input textarea {
+    background: #ddd;
+    padding: 15px;
+    height: calc(100vh - 150px);
+
+    &:focus {
+      box-shadow: none;
+    }
+  }
+
+  .output {
+    flex-grow: 1;
+    margin-left: 20px;
+    overflow: auto;
+
+    .tabs {
+      display: flex;
+      gap: 10px;
+      margin-top: 13px;
+
+      > div {
+        padding: 6px 8px;
+        cursor: pointer;
+        background: #ddd;
+        border-radius: 4px;
+      }
+
+      .active {
+        background: #3f51b5;
+        color: white;
+      }
+    }
+
+    .sql-query-wrapper {
+      margin-bottom: 15px;
+    }
+
+    pre {
+      margin-top: 10px;
+      overflow: scroll;
+      width: 97%;
+    }
+
+    .query-info {
+      .query-copy {
+        padding: 1px 6px;
+        display: inline-block;
+        background: #c7c2c2;
+        border-radius: 3px;
+        color: #333;
+        font-size: 13px;
+        cursor: pointer;
+      }
+
+      .query-time {
+        background: #cad8ba;
+        padding: 2px 5px;
+        border-radius: 4px;
+      }
+    }
+  }
+  .output pre,
+  .input textarea {
+    font-family: "FiraCode" !important;
+  }
+}
