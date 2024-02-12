@@ -51,6 +51,6 @@ class Plugin {
 		new AdminMenu();
 		new Assets();
 		new Ajax();
-		new Updater();
+		// new Updater();
 	}
 }

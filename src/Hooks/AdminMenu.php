@@ -38,7 +38,6 @@ class AdminMenu extends BasePlugin {
 			$parent_slug,
 			array( $this, 'show_wp_tinker_page' ),
 			'dashicons-editor-code',
-			5
 		);
 	}
 

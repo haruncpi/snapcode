@@ -42,9 +42,11 @@ class Updater {
 	/**
 	 * Update URL
 	 *
+	 * @see example https://rudrastyh.com/wp-content/uploads/updater/info.json
 	 * @var string
 	 */
-	private $update_url = 'https://raw.githubusercontent.com/haruncpi/wp-snapcode/src/Updater/plugin.json';
+	private $update_url = 'https://raw.githubusercontent.com/haruncpi/wp-snapcode/master/src/Updater/plugin.json?token=GHSAT0AAAAAACND655IGQVS7YY2GVHE2MMMZN54YWA';
+
 
 	/**
 	 * Register hooks.
@@ -52,10 +54,10 @@ class Updater {
 	public function __construct() {
 		$this->plugin_slug   = plugin_basename( SNAPCODE_FILE );
 		$this->version       = SNAPCODE_VERSION;
-		$this->cache_key     = $this->plugin_slug . '_update';
-		$this->cache_allowed = false;
+		$this->cache_key     = 'snapcode_update';
+		$this->cache_allowed = true;
 
-		add_filter( 'plugins_api', array( $this, 'plugin_info' ), 20, 3 );
+		add_filter( 'plugins_api', array( $this, 'plugin_info' ), 10, 3 );
 		add_filter( 'site_transient_update_plugins', array( $this, 'update' ) );
 	}
 
@@ -88,7 +90,7 @@ class Updater {
 				return false;
 			}
 
-			set_transient( $this->cache_key, $remote, DAY_IN_SECONDS );
+			set_transient( $this->cache_key, $remote, HOUR_IN_SECONDS );
 
 		}
 
@@ -114,7 +116,7 @@ class Updater {
 		}
 
 		// do nothing if it is not our plugin.
-		if ( $this->plugin_slug !== $args->slug ) {
+		if ( ! isset( $args->slug ) || $this->plugin_slug !== $args->slug ) {
 			return $res;
 		}
 
@@ -153,6 +155,42 @@ class Updater {
 		}
 
 		return $res;
+
+	}
+
+	/**
+	 * Update
+	 *
+	 * @param mixed|object|array $transient The value of the 'update_plugins' site transient.
+	 *
+	 * @return mixed
+	 */
+	public function update( $transient ) {
+
+		if ( empty( $transient->checked ) ) {
+			return $transient;
+		}
+
+		$remote = $this->request();
+
+		if (
+			$remote
+			&& version_compare( $this->version, $remote->version, '<' )
+			&& version_compare( $remote->requires, get_bloginfo( 'version' ), '<=' )
+			&& version_compare( $remote->requires_php, PHP_VERSION, '<' )
+		) {
+			$res              = new \stdClass();
+			$res->slug        = $this->plugin_slug;
+			$res->plugin      = $this->plugin_slug;
+			$res->new_version = $remote->version;
+			$res->tested      = $remote->tested;
+			$res->package     = $remote->download_url;
+
+			$transient->response[ $res->plugin ] = $res;
+
+		}
+
+		return $transient;
 
 	}
 }

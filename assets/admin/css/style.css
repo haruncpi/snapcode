@@ -8,11 +8,15 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-right: 15px;
+  box-sizing: border-box;
+  padding: 10px 25px;
+  border-bottom: 1px dotted #888;
 }
 .wptinker-wrapper {
   display: flex;
   height: 100%;
+  box-sizing: border-box;
+  padding: 10px 25px;
 }
 .wptinker-wrapper .input {
   min-width: 50%;
@@ -29,7 +33,7 @@
 .wptinker-wrapper .input textarea {
   background: #ddd;
   padding: 15px;
-  height: calc(100vh - 150px);
+  height: calc(100vh - 200px);
 }
 .wptinker-wrapper .input textarea:focus {
   box-shadow: none;
@@ -38,6 +42,9 @@
   flex-grow: 1;
   margin-left: 20px;
   overflow: auto;
+}
+.wptinker-wrapper .output pre {
+  max-height: calc(100vh - 200px);
 }
 .wptinker-wrapper .output .tabs {
   display: flex;

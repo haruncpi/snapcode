@@ -57,18 +57,26 @@ class TinkerController {
 			$code = Request::get( 'code', '' );
 
 			if ( ! empty( $code ) ) {
+				if ( substr( trim( $code ), -1 ) !== ';' ) {
+					$code .= ';';
+				}
 
-				$other = "require_once '$wp_load';";
+				$bootstrap = "require_once '$wp_load';";
 
-				$filter = "add_filter( 'log_query_custom_data', 'SnapCode\Controllers\TinkerController::log_wp_query',10,5);";
-
-				$file_content = $other . $filter . $code;
+				$add_filter    = "add_filter( 'log_query_custom_data', 'SnapCode\Controllers\TinkerController::log_wp_query',10,5);";
+				$remove_filter = "remove_filter('log_query_custom_data', 'SnapCode\\Controllers\\TinkerController::log_wp_query', 10, 5);";
+				$file_content  = $bootstrap . $add_filter . $code . $remove_filter;
 				file_put_contents( $tmp_file, $file_content );
 
-				$cmd = "cat '$tmp_file' | '{$this->get_php_path()}' '$psys_path'";
-
 				$output_str = '';
+				$cmd        = "cat '$tmp_file' | '{$this->get_php_path()}' '$psys_path'";
+
+				exec( "{$cmd} 2>&1", $output_with_query, $error );
+
+				$file_content = $bootstrap . $code;
+				file_put_contents( $tmp_file, $file_content );
 				exec( "{$cmd} 2>&1", $output, $error );
+
 				if ( 0 !== $error ) {
 					$output   = array();
 					$output[] = $error;

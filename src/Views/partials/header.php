@@ -13,10 +13,11 @@ $php_path = TinkerController::get_php_path();
 ?>
 
 <style>
+#wpcontent{padding: 0;}
 .notice-error,.notice-warning{ display: none; }
 </style>
 
-<div ng-app="myApp" ng-controller="AppCtrl">
+<div ng-app="myApp" ng-controller="AppCtrl" class="wp-tinker-app">
 	<div class="wp-tinker-header">
 		<h2><span class="dashicons dashicons-editor-code"></span> SnapCode</h2>
 		<div class="wp-tinker-config">
