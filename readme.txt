@@ -5,7 +5,7 @@ Tags: snapcode,wp tinker,php,developer,wp fiddle,code runner,wp runner
 Requires at least: 5.3
 Tested up to: 6.4
 Stable tag: trunk
-Requires PHP: 5.4
+Requires PHP: 7.4
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -42,6 +42,11 @@ e.g.
 
 
 == Changelog ==
+
+= 1.0.1 - March 2, 2024
+
+Update: menu slug updated
+FIx: minor bug
 
 = 1.0.0 - March 2, 2024
 
