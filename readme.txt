@@ -21,6 +21,7 @@ Features
 * Execute PHP and WordPress code instantly
 * Test any plugin code snippet or helper
 * Get immediate output
+* Shows queries for executed code.
 * Skip the step of creating a separate PHP file for testing function calls
 
 == Installation ==
