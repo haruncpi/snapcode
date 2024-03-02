@@ -3,6 +3,7 @@
  * Main Plugin Class
  *
  * @package SnapCode
+ * @author Harun <harun.cox@gmail.com>
  */
 
 namespace SnapCode;
@@ -51,6 +52,6 @@ class Plugin {
 		new AdminMenu();
 		new Assets();
 		new Ajax();
-		// new Updater();
+		new Updater();
 	}
 }

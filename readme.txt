@@ -42,7 +42,7 @@ e.g.
 
 == Changelog ==
 
-= 1.0.0 - January 16, 2024
+= 1.0.0 - March 2, 2024
 
 New: first version
 

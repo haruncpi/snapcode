@@ -5,7 +5,7 @@
  * Author: haruncpi
  * Version: 1.0.0
  * Author URI: https://github.com/haruncpi
- * Requires PHP: 5.6
+ * Requires PHP: 7.4
  * Requires at least: 5.3
  * Tested up to: 6.4
  * License: GPLv2 or later

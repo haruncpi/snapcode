@@ -45,7 +45,7 @@ class Updater {
 	 * @see example https://rudrastyh.com/wp-content/uploads/updater/info.json
 	 * @var string
 	 */
-	private $update_url = 'https://raw.githubusercontent.com/haruncpi/wp-snapcode/master/src/Updater/plugin.json?token=GHSAT0AAAAAACND655IGQVS7YY2GVHE2MMMZN54YWA';
+	private $update_url = 'https://raw.githubusercontent.com/haruncpi/wp-snapcode/master/src/Updater/plugin.json';
 
 
 	/**
@@ -75,7 +75,7 @@ class Updater {
 			$remote = wp_remote_get(
 				$this->update_url,
 				array(
-					'timeout' => 10,
+					'timeout' => 5,
 					'headers' => array(
 						'Accept' => 'application/json',
 					),
@@ -141,11 +141,13 @@ class Updater {
 		$res->requires_php   = $remote->requires_php;
 		$res->last_updated   = $remote->last_updated;
 
-		$res->sections = array(
-			'description'  => $remote->sections->description,
-			'installation' => $remote->sections->installation,
-			'changelog'    => $remote->sections->changelog,
-		);
+		if ( ! empty( $remote->sections ) ) {
+			$res->sections = array(
+				'description'  => $remote->sections->description,
+				'installation' => $remote->sections->installation,
+				'changelog'    => $remote->sections->changelog,
+			);
+		}
 
 		if ( ! empty( $remote->banners ) ) {
 			$res->banners = array(

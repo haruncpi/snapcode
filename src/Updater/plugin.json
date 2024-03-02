@@ -3,19 +3,15 @@
 	"slug" : "snapcode",
 	"author" : "<a href='https://github.com/haruncpi'>Harun</a>",
 	"author_profile" : "https://github.com/haruncpi",
-	"version" : "1.0.1",
+	"version" : "1.0.0",
 	"download_url" : "https://github.com/haruncpi/wp-snapcode/download.zip",
 	"requires" : "3.0",
 	"tested" : "5.8",
-	"requires_php" : "5.6",
-	"last_updated" : "2024-01-4 02:10:00",
+	"requires_php" : "7.4",
+	"last_updated" : "2024-03-02 00:00:00",
 	"sections" : {
 		"description" : "This simple plugin does nothing, only gets updates from a custom server",
 		"installation" : "Click the activate button and that's it.",
-		"changelog" : "<h4>1.0 –  1 august 2021</h4><ul><li>Bug fixes.</li><li>Initital release.</li></ul>"
-	},
-	"banners" : {
-		"low" : "https://rudrastyh.com/wp-content/uploads/updater/banner-772x250.jpg",
-		"high" : "https://rudrastyh.com/wp-content/uploads/updater/banner-1544x500.jpg"
+		"changelog" : ""
 	}
 }
