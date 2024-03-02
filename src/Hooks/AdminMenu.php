@@ -31,6 +31,8 @@ class AdminMenu extends BasePlugin {
 	public function add_admin_menu() {
 		$admin_menu_text = 'SnapCode';
 		$parent_slug     = 'wp-tinker';
+		$position        = 80;
+
 		add_menu_page(
 			$admin_menu_text,
 			$admin_menu_text,
@@ -38,6 +40,7 @@ class AdminMenu extends BasePlugin {
 			$parent_slug,
 			array( $this, 'show_wp_tinker_page' ),
 			'dashicons-editor-code',
+			$position
 		);
 	}
 

@@ -14,7 +14,7 @@ $php_path = TinkerController::get_php_path();
 
 <style>
 #wpcontent{padding: 0;}
-.notice-error,.notice-warning{ display: none; }
+.notice-error,.notice-warning{ display: none!important; }
 </style>
 
 <div ng-app="myApp" ng-controller="AppCtrl" class="wp-tinker-app">
