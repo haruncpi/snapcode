@@ -3,6 +3,7 @@
  * Manage Plugin Update
  *
  * @package SnapCode
+ * @author Harun <harun.cox@gmail.com>
  */
 
 namespace SnapCode\Updater;

@@ -3,6 +3,7 @@
  * Handle Ajax Request
  *
  * @package SnapCode
+ * @author Harun <harun.cox@gmail.com>
  */
 
 namespace SnapCode\Hooks;

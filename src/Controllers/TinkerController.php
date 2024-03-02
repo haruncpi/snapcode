@@ -3,6 +3,7 @@
  * Controller Class
  *
  * @package SnapCode
+ * @author Harun <harun.cox@gmail.com>
  */
 
 namespace SnapCode\Controllers;

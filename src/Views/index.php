@@ -4,7 +4,8 @@
  *
  * @since 1.0.0
  *
- * @package WpTinker
+ * @package SnapCode
+ * @author Harun <harun.cox@gmail.com>
  */
 
 ?>

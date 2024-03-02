@@ -5,6 +5,7 @@
  * @since 1.0.0
  *
  * @package SnapCode
+ * @author Harun <harun.cox@gmail.com>
  */
 
 use SnapCode\Controllers\TinkerController;

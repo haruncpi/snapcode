@@ -3,6 +3,7 @@
  * Admin Menu Register
  *
  * @package SnapCode
+ * @author Harun <harun.cox@gmail.com>
  */
 
 namespace SnapCode\Hooks;
@@ -30,7 +31,7 @@ class AdminMenu extends BasePlugin {
 	 */
 	public function add_admin_menu() {
 		$admin_menu_text = 'SnapCode';
-		$parent_slug     = 'wp-tinker';
+		$parent_slug     = 'snapcode';
 		$position        = 80;
 
 		add_menu_page(
