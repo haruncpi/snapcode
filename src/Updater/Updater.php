@@ -46,7 +46,7 @@ class Updater {
 	 * @see example https://rudrastyh.com/wp-content/uploads/updater/info.json
 	 * @var string
 	 */
-	private $update_url = 'https://raw.githubusercontent.com/haruncpi/wp-snapcode/master/src/Updater/plugin.json';
+	private $update_url = 'https://raw.githubusercontent.com/haruncpi/snapcode/master/src/Updater/plugin.json';
 
 
 	/**
