@@ -3,7 +3,7 @@
  * Plugin Name: SnapCode
  * Description: Run WordPress code instantly without a code editor
  * Author: haruncpi
- * Version: 1.0.1
+ * Version: 1.0.2
  * Author URI: https://github.com/haruncpi
  * Requires PHP: 7.4
  * Requires at least: 5.3
@@ -15,7 +15,7 @@
 
 use SnapCode\Plugin;
 
-require_once 'vendor/autoload.php';
-require_once 'constants.php';
+require_once __DIR__ . '/vendor/autoload.php';
+require_once __DIR__ . '/constants.php';
 
 Plugin::get_instance();

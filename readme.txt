@@ -43,6 +43,10 @@ e.g.
 
 == Changelog ==
 
+= 1.0.2 - March 4, 2024
+
+Fix: bug fixes
+
 = 1.0.1 - March 2, 2024
 
 Update: menu slug updated
