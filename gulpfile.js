@@ -15,7 +15,7 @@ try {
     versionNumber = data.match(/Version:\s*([\d.]+)/i)?.[1] || '';
 } catch (err) { }
 
-const zipName = `${pluginName}-${versionNumber}.zip`;
+const zipName = `${pluginName}.zip`;
 const buildDest = './build';
 const buildFiles = [
     './**/*.*',
