@@ -59,7 +59,7 @@ class Updater {
 		$this->cache_allowed = true;
 
 		add_filter( 'plugins_api', array( $this, 'plugin_info' ), 10, 3 );
-		add_filter( 'site_transient_update_plugins', array( $this, 'update' ) );
+		add_filter( 'site_transient_update_plugins', array( $this, 'check_update' ) );
 	}
 
 	/**
@@ -162,13 +162,13 @@ class Updater {
 	}
 
 	/**
-	 * Update
+	 * Check Update
 	 *
 	 * @param mixed|object|array $transient The value of the 'update_plugins' site transient.
 	 *
 	 * @return mixed
 	 */
-	public function update( $transient ) {
+	public function check_update( $transient ) {
 
 		if ( empty( $transient->checked ) ) {
 			return $transient;
@@ -176,11 +176,9 @@ class Updater {
 
 		$remote = $this->request();
 
-		if (
-			$remote
+		if ( $remote
+			&& isset( $remote->version )
 			&& version_compare( $this->version, $remote->version, '<' )
-			&& version_compare( $remote->requires, get_bloginfo( 'version' ), '<=' )
-			&& version_compare( $remote->requires_php, PHP_VERSION, '<' )
 		) {
 			$res              = new \stdClass();
 			$res->slug        = $this->plugin_slug;
