@@ -17,4 +17,4 @@ Run WordPress code instantly without a code editor
 * Skip the step of creating a separate PHP file for testing function calls
 
 **Download Plugin**
-[WP SnapCode](https://github.com/haruncpi/wp-snapcode/releases)
+[WP SnapCode](https://github.com/haruncpi/snapcode/releases/latest/download/snapcode.zip)
