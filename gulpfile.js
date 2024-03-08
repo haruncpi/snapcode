@@ -18,7 +18,7 @@ try {
 const zipName = `${pluginName}.zip`;
 const buildDest = './build';
 const buildFiles = [
-    './**/*.*',
+    './**/*',
     '!./build/**',
     '!./node_modules/**',
     '!./test/**',
@@ -69,7 +69,7 @@ const makePod = (cb) => {
 }
 
 const build = cb => src(buildFiles).pipe(dest(buildDest))
-const buildZip = cb => src(`${buildDest}/**/*.*`).pipe(zip(zipName)).pipe(dest('./'))
+const buildZip = cb => src(`${buildDest}/**/*`).pipe(zip(zipName)).pipe(dest('./'))
 
 
 exports.build = series(cleanZip, cleanBuild, makePod, build, buildZip)
