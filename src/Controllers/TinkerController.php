@@ -25,6 +25,25 @@ class TinkerController {
 	}
 
 	/**
+	 * Add return statement to last line if not exist.
+	 *
+	 * @param string $code code.
+	 *
+	 * @return string
+	 */
+	public function add_return_stmt( $code ) {
+		// Split into lines and get the last line.
+		$lines     = explode( "\n", $code );
+		$last_line = trim( array_pop( $lines ) );
+
+		// Ensure the last line ends with a semicolon, then prepend 'return'.
+		$last_line = 'return ' . rtrim( $last_line, ';' ) . ';';
+
+		// Reassemble the code.
+		return implode( "\n", $lines ) . "\n" . $last_line;
+	}
+
+	/**
 	 * Get output.
 	 *
 	 * @since 1.0.0
@@ -33,11 +52,12 @@ class TinkerController {
 	 */
 	public function get_output() {
 
-		$psys_path  = SNAPCODE_DIR . 'vendor/bin/psysh';
-		$tmp_dir    = SNAPCODE_DIR . 'tmp';
-		$tmp_file   = $tmp_dir . '/tmp.txt';
-		$wp_load    = ABSPATH . 'wp-load.php';
-		$query_file = $tmp_dir . '/query.json';
+		$psysh_path   = SNAPCODE_DIR . 'vendor/bin/psysh';
+		$psysh_config = SNAPCODE_DIR . '.psysh.php';
+		$tmp_dir      = SNAPCODE_DIR . 'tmp';
+		$tmp_file     = $tmp_dir . '/tmp.txt';
+		$wp_load      = ABSPATH . 'wp-load.php';
+		$query_file   = $tmp_dir . '/query.json';
 
 		$output     = array();
 		$output_str = '';
@@ -55,27 +75,26 @@ class TinkerController {
 		}
 
 		if ( isset( $_POST['code'] ) ) {
-			$code = Request::get( 'code', '' );
+			$code = Request::get( 'code', '', 'sanitize_textarea_field' );
 
 			if ( ! empty( $code ) ) {
 				if ( substr( trim( $code ), -1 ) !== ';' ) {
 					$code .= ';';
 				}
 
-				$bootstrap = "require_once '$wp_load';";
-
-				$add_filter    = "add_filter( 'log_query_custom_data', 'SnapCode\Controllers\TinkerController::log_wp_query',10,5);";
-				$remove_filter = "remove_filter('log_query_custom_data', 'SnapCode\\Controllers\\TinkerController::log_wp_query', 10, 5);";
-				$file_content  = $bootstrap . $add_filter . $code . $remove_filter;
-				file_put_contents( $tmp_file, $file_content );
+				$code = $this->add_return_stmt( $code );
 
 				$output_str = '';
-				$cmd        = "cat '$tmp_file' | '{$this->get_php_path()}' '$psys_path'";
+				$bootstrap  = "require_once '$wp_load';";
+				$cmd        = "cat '$tmp_file' | '{$this->get_php_path()}' '$psysh_path'";
 
-				exec( "{$cmd} 2>&1", $output_with_query, $error );
+				$callback      = 'SnapCode\Controllers\TinkerController::log_wp_query';
+				$add_filter    = "add_filter( 'log_query_custom_data',   '$callback', 10, 5 );";
+				$remove_filter = "remove_filter('log_query_custom_data', '$callback', 10, 5 );";
 
-				$file_content = $bootstrap . $code;
+				$file_content = $bootstrap . $add_filter . $code . $remove_filter;
 				file_put_contents( $tmp_file, $file_content );
+
 				exec( "{$cmd} 2>&1", $output, $error );
 
 				if ( 0 !== $error ) {

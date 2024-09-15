@@ -11,18 +11,20 @@
 ?>
 
 <?php require_once 'partials/header.php'; ?>
-
 	<div class="wptinker-wrapper">
 		<input type="hidden" name="_wpnonce" value="<?php echo esc_attr( wp_create_nonce( 'wp_tinker' ) ); ?>">
+
 		<div class="input">
 				<p>Write Code</p>
-				<textarea id="code" name="code" ng-model="model.code" rows="10" 
-				ng-keydown="listenEvent($event)"
-				style="width: 99%;"></textarea>
+				<div id="editor"></div>
 
+
+				<select id="theme-selector"
+						ng-change="changeTheme(model.theme)" 
+						ng-model="model.theme" ng-options="row.theme as row.caption for row in model.themes"></select>
 				<button class="button" 
 				ng-disabled="processing || !model.code"
-				type="button" ng-click="getOutput(model)">{{processing? 'Running...':'► Run'}}</button>
+				type="button" ng-click="getOutput()">{{processing? 'Running...':'► Run'}}</button>
 		</div>
 
 		<div class="output">

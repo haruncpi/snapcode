@@ -7,11 +7,45 @@ myApp.controller('AppCtrl', function ($scope, $http) {
     $scope.processing = false
     $scope.phpPath = ''
 
+    const snapcodeSavedData = localStorage.getItem('snapcode') ? JSON.parse(localStorage.getItem('snapcode')) : {}
     $scope.model = {
-        code: 'new WP_User(1)'
+        theme: snapcodeSavedData.theme ? snapcodeSavedData.theme : 'ace/theme/clouds',
+        code: snapcodeSavedData.code ? snapcodeSavedData.code : 'new WP_User(1)'
     }
 
-    document.getElementById('code').focus()
+
+
+    const editor = ace.edit("editor");
+    const beautify = ace.require("ace/ext/beautify");
+    const langTools = ace.require('ace/ext/language_tools');
+    const themeList = ace.require("ace/ext/themelist").themes;
+
+    $scope.model.themes = themeList;
+
+    editor.container.classList.add("snapcode_editor");
+    editor.setShowPrintMargin(false);
+    editor.setOptions({
+        fontFamily: "FiraCode",
+        fontSize: "12pt",
+        // enableBasicAutocompletion: true,
+        // enableLiveAutocompletion: true,
+        // enableSnippets: true
+    });
+
+    editor.setTheme($scope.model.theme);
+    editor.session.setMode({
+        path: "ace/mode/php",
+        inline: true
+    });
+
+    editor.setValue($scope.model.code)
+    editor.navigateFileEnd();
+    // setTimeout(() => beautify.beautify(editor.session), 100)
+
+
+    $scope.changeTheme = function (theme) {
+        editor.setTheme(theme);
+    }
 
     Object.toparams = function ObjecttoParams(obj) {
         var p = [];
@@ -54,11 +88,13 @@ myApp.controller('AppCtrl', function ($scope, $http) {
         }, 1000)
     }
 
-    function getOutput(model) {
+    function getOutput() {
+        const code = editor.getSelectedText() || editor.getValue()
+
         let payload = {
             _wpnonce: document.querySelector('input[name="_wpnonce"]').value,
             action: 'wptinker_output',
-            code: model.code
+            code: code
         }
 
         let config = {
@@ -66,6 +102,7 @@ myApp.controller('AppCtrl', function ($scope, $http) {
         }
 
         $scope.processing = true
+        localStorage.setItem('snapcode', JSON.stringify({ code: code }))
         $http.post(_snapcode.ajaxUrl, Object.toparams(payload), config)
             .success(function (res) {
                 console.log(res)

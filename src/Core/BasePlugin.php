@@ -12,20 +12,50 @@ namespace SnapCode\Core;
  * Class BasePlugin
  */
 class BasePlugin {
-    //phpcs:disable
+
+	/**
+	 * Main plugin file path.
+	 *
+	 * @var string
+	 */
+	protected $plugin_file;
+
+	/**
+	 * Plugin directory
+	 *
+	 * @var string
+	 */
 	protected $plugin_dir;
+
+	/**
+	 * Plugin version
+	 *
+	 * @var string
+	 */
 	protected $plugin_version;
+
+	/**
+	 * View file directory
+	 *
+	 * @var string
+	 */
 	protected $view_dir;
-	protected $admin_asset_url;
-    //phpcs:enable
+
+	/**
+	 * Asset URL
+	 *
+	 * @var string
+	 */
+	protected $asset_url;
 
 	/**
 	 * Constructor
 	 */
 	public function __construct() {
-		$this->plugin_version  = SNAPCODE_VERSION;
-		$this->plugin_dir      = SNAPCODE_DIR;
-		$this->view_dir        = $this->plugin_dir . '/src/Views';
-		$this->admin_asset_url = SNAPCODE_URL . 'assets/admin';
+		$this->plugin_version = SNAPCODE_VERSION;
+		$this->plugin_file    = SNAPCODE_FILE;
+		$this->plugin_dir     = SNAPCODE_DIR;
+		$this->view_dir       = $this->plugin_dir . '/src/Views';
+		$this->asset_url      = SNAPCODE_URL . 'assets';
 	}
 }
