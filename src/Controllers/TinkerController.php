@@ -32,16 +32,55 @@ class TinkerController {
 	 * @return string
 	 */
 	public function add_return_stmt( $code ) {
-		// Split into lines and get the last line.
-		$lines     = explode( "\n", $code );
-		$last_line = trim( array_pop( $lines ) );
+		$tokens            = token_get_all( "<?php\n" . $code );
+		$output            = '';
+		$statements        = array();
+		$current_statement = '';
+		$in_function_chain = false;
 
-		// Ensure the last line ends with a semicolon, then prepend 'return'.
-		$last_line = 'return ' . rtrim( $last_line, ';' ) . ';';
+		foreach ( $tokens as $token ) {
+			if ( is_array( $token ) ) {
+				$current_statement .= $token[1];
+			} else {
+				$current_statement .= $token;
+			}
 
-		// Reassemble the code.
-		return implode( "\n", $lines ) . "\n" . $last_line;
+			// Detect function chaining with '->'.
+			if ( '->' === $token ) {
+				$in_function_chain = true;
+			}
+
+			// Complete a statement if it's not in a function chain and ends with a semicolon.
+			if ( ! $in_function_chain && ';' === $token ) {
+				$statements[]      = $current_statement;
+				$current_statement = '';
+			}
+
+			// End of function chain on semicolon.
+			if ( $in_function_chain && ';' === $token ) {
+				$in_function_chain = false;
+				$statements[]      = $current_statement;
+				$current_statement = '';
+			}
+		}
+
+		// Add any remaining partial statement.
+		if ( ! empty( $current_statement ) ) {
+			$statements[] = $current_statement;
+		}
+
+		// Insert 'return' before the last statement.
+		if ( ! empty( $statements ) ) {
+			$last_statement = array_pop( $statements );
+			// Add return before last statement.
+			$statements[] = 'return ' . trim( $last_statement );
+		}
+
+		// Recombine the statements.
+		$output = implode( "\n", $statements );
+		return str_replace( '<?php', '', $output );
 	}
+
 
 	/**
 	 * Get output.
