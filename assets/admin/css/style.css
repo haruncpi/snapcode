@@ -12,6 +12,15 @@
   padding: 10px 25px;
   border-bottom: 1px dotted #888;
 }
+.wp-tinker-header .wp-tinker-config {
+  display: flex;
+  gap: 20px;
+}
+.wp-tinker-header .wp-tinker-config .wp-tinker-update-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
 .wptinker-wrapper {
   display: flex;
   height: 100%;

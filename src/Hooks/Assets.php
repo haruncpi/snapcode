@@ -30,8 +30,8 @@ class Assets extends BasePlugin {
 	public function load_admin_assets() {
 		wp_enqueue_style( 'snapcode-admin-css', $this->asset_url . '/admin/css/style.css', array(), $this->plugin_version );
 		wp_enqueue_script( 'snapcode-ace', $this->asset_url . '/admin/libs/ace/src-min/ace.js', array(), $this->plugin_version, true );
-		wp_enqueue_script( 'snapcode-ace-beautify', $this->asset_url . '/admin/libs/ace/src-min/ext-beautify.js', array('snapcode-ace'), $this->plugin_version, true );
-		wp_enqueue_script( 'snapcode-ace-themelist', $this->asset_url . '/admin/libs/ace/src-min/ext-themelist.js', array('snapcode-ace'), $this->plugin_version, true );
+		wp_enqueue_script( 'snapcode-ace-beautify', $this->asset_url . '/admin/libs/ace/src-min/ext-beautify.js', array( 'snapcode-ace' ), $this->plugin_version, true );
+		wp_enqueue_script( 'snapcode-ace-themelist', $this->asset_url . '/admin/libs/ace/src-min/ext-themelist.js', array( 'snapcode-ace' ), $this->plugin_version, true );
 		wp_enqueue_script( 'snapcode-angularjs', $this->asset_url . '/admin/libs/angular.min.js', array(), $this->plugin_version, true );
 		wp_enqueue_script( 'snapcode-adminjs', $this->asset_url . '/admin/js/app.js', array( 'snapcode-angularjs' ), $this->plugin_version, true );
 
@@ -39,8 +39,11 @@ class Assets extends BasePlugin {
 			'snapcode-adminjs',
 			'_snapcode',
 			array(
-				'ajaxUrl'   => admin_url( 'admin-ajax.php' ),
-				'pluginUrl' => plugin_dir_url( SNAPCODE_FILE ),
+				'ajaxUrl'           => admin_url( 'admin-ajax.php' ),
+				'pluginUrl'         => plugin_dir_url( SNAPCODE_FILE ),
+				'version'           => $this->plugin_version,
+				'updateUrl'         => SNAPCODE_UPDATE_URL,
+				'pluginUpdateNonce' => wp_create_nonce( 'updates' ),
 			)
 		);
 	}

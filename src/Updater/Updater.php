@@ -1,6 +1,8 @@
 <?php
 /**
  * Manage Plugin Update
+ * Plugin update transient: _site_transient_update_plugins
+ * Theme update transient: _site_transient_update_themes
  *
  * @package SnapCode
  * @author Harun <harun.cox@gmail.com>
@@ -12,6 +14,13 @@ namespace SnapCode\Updater;
  * Class Updater
  */
 class Updater {
+	/**
+	 * Instance
+	 *
+	 * @var self
+	 */
+	private static $instance;
+
 	/**
 	 * Plugin slug
 	 *
@@ -46,20 +55,61 @@ class Updater {
 	 * @see example https://rudrastyh.com/wp-content/uploads/updater/info.json
 	 * @var string
 	 */
-	private $update_url = 'https://raw.githubusercontent.com/haruncpi/snapcode/master/src/Updater/plugin.json';
+	private $update_url;
 
 
 	/**
 	 * Register hooks.
+	 *
+	 * @param array $config update config.
 	 */
-	public function __construct() {
-		$this->plugin_slug   = plugin_basename( SNAPCODE_FILE );
-		$this->version       = SNAPCODE_VERSION;
-		$this->cache_key     = 'snapcode_update';
+	private function __construct( $config ) {
+		$required_keys = array(
+			'plugin_file',
+			'update_url',
+		);
+
+		foreach ( $required_keys as $key ) {
+			if ( ! array_key_exists( $key, $config ) ) {
+				wp_die( esc_html( "$key is required for plugin updater" ) );
+			}
+		}
+
+		$plugin_file = $config['plugin_file'];
+
+		if ( ! is_file( $plugin_file ) ) {
+			wp_die( esc_html( "Plugin file not found: $plugin_file" ) );
+		}
+
+		if ( ! function_exists( 'get_plugin_data' ) ) {
+			require_once ABSPATH . 'wp-admin/includes/plugin.php';
+		}
+
+		$plugin_data = get_plugin_data( $plugin_file );
+
+		$this->update_url    = $config['update_url'];
+		$this->plugin_slug   = plugin_basename( $config['plugin_file'] );
+		$this->version       = $plugin_data['Version'];
+		$this->cache_key     = "{$this->plugin_slug}_update";
 		$this->cache_allowed = true;
 
 		add_filter( 'plugins_api', array( $this, 'plugin_info' ), 10, 3 );
 		add_filter( 'site_transient_update_plugins', array( $this, 'check_update' ) );
+	}
+
+	/**
+	 * Get instance
+	 *
+	 * @param array $config update config.
+	 *
+	 * @return self
+	 */
+	public static function configure( $config ) {
+		if ( isset( self::$instance ) ) {
+			return self::$instance;
+		}
+
+		return new self( $config );
 	}
 
 	/**
@@ -99,6 +149,15 @@ class Updater {
 
 		return $remote;
 
+	}
+
+	/**
+	 * Clear request cache.
+	 *
+	 * @return void
+	 */
+	public function clear_request_cache() {
+		delete_transient( $this->cache_key );
 	}
 
 	/**

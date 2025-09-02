@@ -1,10 +1,10 @@
 === SnapCode ===
-Contributors: harucpi
+Contributors: haruncpi
 Donate link: https://github.com/haruncpi
 Tags: snapcode,wp tinker,php,developer,wp fiddle,code runner,wp runner
 Requires at least: 5.3
 Tested up to: 6.4
-Stable tag: trunk
+Stable tag: 1.0.4
 Requires PHP: 7.4
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -42,6 +42,10 @@ e.g.
 
 
 == Changelog ==
+
+= 1.0.4 - September 2, 2025
+
+Fix: bug fixes
 
 = 1.0.3 - March 7, 2024
 

@@ -52,6 +52,12 @@ class Plugin {
 		new AdminMenu();
 		new Assets();
 		new Ajax();
-		new Updater();
+
+		Updater::configure(
+			array(
+				'plugin_file' => SNAPCODE_FILE,
+				'update_url'  => SNAPCODE_UPDATE_URL,
+			)
+		);
 	}
 }
