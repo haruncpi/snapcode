@@ -43,7 +43,7 @@ use SnapCode\Helper;
 						<span class="query-time">{{row.query_time|number:5}}</span>
 						<span class="query-copy" ng-click="copy(row.query,$event)">Copy</span>
 					</p>
-					<pre class="sql-query">{{row.query}}</pre>
+					<pre class="sql-query">{{prettySql(row.query)}}</pre>
 				</div>
 			</div>
 			<!-- SQL query tab end -->

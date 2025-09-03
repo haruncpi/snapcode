@@ -12,6 +12,9 @@
   padding: 10px 25px;
   border-bottom: 1px dotted #888;
 }
+.wp-tinker-header .snapcode-title h2 {
+  margin: 10px 0;
+}
 .wp-tinker-header .wp-tinker-config {
   display: flex;
   gap: 20px;
@@ -120,4 +123,14 @@
 .wptinker-wrapper .output pre,
 .wptinker-wrapper .input textarea {
   font-family: "FiraCode" !important;
+}
+.snapcode-settings-content p {
+  margin-bottom: 2px;
+}
+.snapcode-settings-content input {
+  width: 100%;
+}
+.snapcode-settings-content .btn-snapcode-save-settings {
+  margin-top: 24px;
+  float: right;
 }

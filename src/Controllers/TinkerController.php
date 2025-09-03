@@ -138,9 +138,10 @@ class TinkerController {
 
 			$code = $this->add_return_stmt( $code );
 
+			$php_path   = Helper::get_option( 'phpPath', 'php' );
 			$output_str = '';
 			$bootstrap  = "require_once '$this->wp_load';";
-			$cmd        = "cat '$this->tmp_file' | '{$this->get_php_path()}' '$this->psysh_path'";
+			$cmd        = "cat '$this->tmp_file' | '{$php_path}' '$this->psysh_path'";
 
 			$callback      = 'SnapCode\Controllers\TinkerController::log_wp_query';
 			$add_filter    = "add_filter( 'log_query_custom_data',   '$callback', 10, 5 );";
@@ -268,22 +269,13 @@ class TinkerController {
 	}
 
 	/**
-	 * Get PHP path
-	 *
-	 * @return string
-	 */
-	public static function get_php_path() {
-		return get_option( 'wptinker_php_path', '/opt/homebrew/bin/php' );
-	}
-
-	/**
-	 * Save Config
+	 * Save Settings
 	 *
 	 * @since 1.0.0
 	 *
 	 * @return void
 	 */
-	public function save_config() {
+	public function save_settings() {
 		if ( ! Helper::is_nonce_valid() ) {
 			wp_send_json(
 				array(
@@ -293,9 +285,9 @@ class TinkerController {
 			);
 		}
 
-		$path = Request::get( 'php_path', '' );
+		$settings = json_decode( Request::get( 'settings', '' ), true );
 
-		update_option( 'wptinker_php_path', $path );
+		update_option( 'snapcode_settings', $settings );
 
 		wp_send_json(
 			array(
