@@ -23,13 +23,15 @@ $php_path = TinkerController::get_php_path();
 
 <div ng-app="myApp" ng-controller="AppCtrl" class="wp-tinker-app" ng-cloak>
 	<div class="wp-tinker-header">
-		<h2><span class="dashicons dashicons-editor-code"></span> SnapCode</h2>
+		<div>
+			<h2><span class="dashicons dashicons-editor-code"></span> SnapCode</h2>
+		</div>
 		<div class="wp-tinker-config">
 			<div>
 				<input type="hidden" name="_wpnonce_php_path" value="<?php echo esc_attr( wp_create_nonce( 'wp_tinker' ) ); ?>">
 				<span>PHP Path</span> 
 				<input ng-model="phpPath" name="php-path" ng-init="phpPath='<?php echo esc_attr( $php_path ); ?>'" type="text">
-				<button type="button" ng-click="saveConfig(phpPath)" class="button button-secondary" >Save</button>
+				<button type="button" ng-click="saveConfig(phpPath)" class="button button-secondary" ng-disabled="saving">{{saving? 'Saving...':'Save'}}</button>
 			</div>
 
 			<!-- update info -->

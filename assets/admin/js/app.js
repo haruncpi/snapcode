@@ -118,9 +118,17 @@ myApp.controller('AppCtrl', function ($scope, $http) {
             })
     }
 
+    $scope.saving = false;
     $scope.saveConfig = function (phpPath) {
-        if (!confirm('Are you sure?')) return;
+        // validate path
+        if (!phpPath) {
+            alert('Please enter a valid PHP path');
+            return;
+        }
 
+        phpPath = phpPath.replace(/\\/g, '/');
+
+        $scope.saving = true;
         let payload = {
             _wpnonce_php_path: document.querySelector('input[name="_wpnonce_php_path"]').value,
             action: 'wptinker_save_config',
@@ -133,8 +141,7 @@ myApp.controller('AppCtrl', function ($scope, $http) {
 
         $http.post(_snapcode.ajaxUrl, Object.toparams(payload), config)
             .success(function (res) {
-                console.log(res)
-                alert(res.message)
+                $scope.saving = false;
             })
     }
 

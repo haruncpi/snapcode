@@ -8,6 +8,8 @@
  * @author Harun <harun.cox@gmail.com>
  */
 
+use SnapCode\Helper;
+
 ?>
 
 <?php require_once 'partials/header.php'; ?>
@@ -15,11 +17,11 @@
 		<input type="hidden" name="_wpnonce" value="<?php echo esc_attr( wp_create_nonce( 'wp_tinker' ) ); ?>">
 
 		<div class="input">
-				<p>Write Code</p>
-				<div id="editor"></div>
+			<p>Write Code</p>
+			<div id="editor"></div>
 
 
-				<select id="theme-selector"
+			<select id="theme-selector"
 						ng-change="changeTheme(model.theme)" 
 						ng-model="model.theme" ng-options="row.theme as row.caption for row in model.themes"></select>
 				<button class="button" 
