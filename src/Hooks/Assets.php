@@ -44,6 +44,8 @@ class Assets extends BasePlugin {
 				'version'           => $this->plugin_version,
 				'updateUrl'         => SNAPCODE_UPDATE_URL,
 				'pluginUpdateNonce' => wp_create_nonce( 'updates' ),
+				'nonceKey'          => 'wp_snapcode',
+				'nonceValue'        => wp_create_nonce( 'wp_snapcode' ),
 			)
 		);
 	}

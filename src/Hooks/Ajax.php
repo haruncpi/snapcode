@@ -20,7 +20,7 @@ class Ajax {
 	public function __construct() {
 
 		$tinker_ctrl = new TinkerController();
-		add_action( 'wp_ajax_wptinker_output', array( $tinker_ctrl, 'get_output' ) );
-		add_action( 'wp_ajax_wptinker_save_config', array( $tinker_ctrl, 'save_config' ) );
+		add_action( 'wp_ajax_snapcode_output', array( $tinker_ctrl, 'get_output' ) );
+		add_action( 'wp_ajax_snapcode_save_config', array( $tinker_ctrl, 'save_config' ) );
 	}
 }

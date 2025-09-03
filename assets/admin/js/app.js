@@ -1,6 +1,7 @@
 let myApp = angular.module('myApp', [])
 
 myApp.controller('AppCtrl', function ($scope, $http) {
+    const { nonceKey,nonceValue, ajaxUrl } = _snapcode;
 
     $scope.output = ''
     $scope.tab = 'output'
@@ -92,8 +93,8 @@ myApp.controller('AppCtrl', function ($scope, $http) {
         const code = editor.getSelectedText() || editor.getValue()
 
         let payload = {
-            _wpnonce: document.querySelector('input[name="_wpnonce"]').value,
-            action: 'wptinker_output',
+            [nonceKey]: nonceValue,
+            action: 'snapcode_output',
             code: code
         }
 
@@ -130,8 +131,8 @@ myApp.controller('AppCtrl', function ($scope, $http) {
 
         $scope.saving = true;
         let payload = {
-            _wpnonce_php_path: document.querySelector('input[name="_wpnonce_php_path"]').value,
-            action: 'wptinker_save_config',
+            [nonceKey]: nonceValue,
+            action: 'snapcode_save_config',
             php_path: phpPath
         }
 
@@ -199,7 +200,7 @@ myApp.controller('AppCtrl', function ($scope, $http) {
         }
 
         $scope.updating = true
-        $http.post(ajaxUrl, toFormData(data), config)
+        $http.post(_snapcode.ajaxUrl, toFormData(data), config)
             .success(function (res) {
                 $scope.updating = false
                 if (res.success) {

@@ -21,6 +21,12 @@
   align-items: center;
   gap: 10px;
 }
+.updating-info {
+  color: green;
+}
+.updating-info .dashicons-update {
+  animation: rotation 2s infinite linear;
+}
 .wptinker-wrapper {
   display: flex;
   height: 100%;
@@ -37,7 +43,7 @@
 .wptinker-wrapper #editor {
   position: absolute;
   width: 99%;
-  height: calc(100vh - 180px);
+  height: calc(100vh - 200px);
 }
 .wptinker-wrapper .snapcode_editor .ace_content {
   padding-top: 10px;
@@ -60,7 +66,7 @@
 .wptinker-wrapper .input textarea {
   background: #ddd;
   padding: 15px;
-  height: calc(100vh - 200px);
+  height: calc(100vh - 240px);
   resize: horizontal;
 }
 .wptinker-wrapper .input textarea:focus {

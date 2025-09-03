@@ -14,7 +14,7 @@ use SnapCode\Helper;
 
 <?php require_once 'partials/header.php'; ?>
 	<div class="wptinker-wrapper">
-		<input type="hidden" name="_wpnonce" value="<?php echo esc_attr( wp_create_nonce( 'wp_tinker' ) ); ?>">
+		<input type="hidden" name="_wpnonce" value="<?php echo esc_attr( wp_create_nonce( 'wp_snapcode' ) ); ?>">
 
 		<div class="input">
 			<p>Write Code</p>

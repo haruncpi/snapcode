@@ -9,16 +9,25 @@
 namespace SnapCode\Controllers;
 
 use SnapCode\Core\Request;
+use SnapCode\Helper;
+use SnapCode\Classes\SnapCodeShellOutput;
 
 /**
  * Class TinkerController
  */
+#[\AllowDynamicProperties]
 class TinkerController {
 
 	/**
 	 * Define constant if not defined.
 	 */
 	public function __construct() {
+		$this->psysh_path = SNAPCODE_DIR . 'vendor/bin/psysh';
+		$this->tmp_dir    = SNAPCODE_DIR . 'tmp';
+		$this->tmp_file   = $this->tmp_dir . '/tmp.txt';
+		$this->query_file = $this->tmp_dir . '/query.json';
+		$this->wp_load    = ABSPATH . 'wp-load.php';
+
 		if ( ! defined( 'SAVEQUERIES' ) ) {
 			define( 'SAVEQUERIES', true );
 		}
@@ -83,6 +92,22 @@ class TinkerController {
 
 
 	/**
+	 * Empty tmp files.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function empty_tmp_files() {
+		if ( ! is_dir( $this->tmp_dir ) ) {
+			mkdir( $this->tmp_dir, 0755, true );
+		}
+
+		file_put_contents( $this->query_file, '[]' );
+		file_put_contents( $this->tmp_file, '' );
+	}
+
+	/**
 	 * Get output.
 	 *
 	 * @since 1.0.0
@@ -90,68 +115,125 @@ class TinkerController {
 	 * @return void
 	 */
 	public function get_output() {
+		if ( ! Helper::is_nonce_valid() ) {
+			wp_send_json_error( 'Nonce verification fail' );
+		}
 
-		$psysh_path   = SNAPCODE_DIR . 'vendor/bin/psysh';
-		$psysh_config = SNAPCODE_DIR . '.psysh.php';
-		$tmp_dir      = SNAPCODE_DIR . 'tmp';
-		$tmp_file     = $tmp_dir . '/tmp.txt';
-		$wp_load      = ABSPATH . 'wp-load.php';
-		$query_file   = $tmp_dir . '/query.json';
+		if ( ! Request::has( 'code' ) ) {
+			wp_send_json_success( '' );
+		}
 
 		$output     = array();
 		$output_str = '';
 		$code       = '';
 
-		if ( ! is_dir( $tmp_dir ) ) {
-			mkdir( $tmp_dir, 0755, true );
+		$this->empty_tmp_files();
+
+		$code = Request::get( 'code', '', 'sanitize_textarea_field' );
+
+		if ( ! empty( $code ) ) {
+			if ( substr( trim( $code ), -1 ) !== ';' ) {
+				$code .= ';';
+			}
+
+			$code = $this->add_return_stmt( $code );
+
+			$output_str = '';
+			$bootstrap  = "require_once '$this->wp_load';";
+			$cmd        = "cat '$this->tmp_file' | '{$this->get_php_path()}' '$this->psysh_path'";
+
+			$callback      = 'SnapCode\Controllers\TinkerController::log_wp_query';
+			$add_filter    = "add_filter( 'log_query_custom_data',   '$callback', 10, 5 );";
+			$remove_filter = "remove_filter('log_query_custom_data', '$callback', 10, 5 );";
+
+			$file_content = $bootstrap . $add_filter . $code . $remove_filter;
+			file_put_contents( $this->tmp_file, $file_content );
+
+			exec( "{$cmd} 2>&1", $output, $error );
+
+			if ( 0 !== $error ) {
+				$output   = array();
+				$output[] = $error;
+			}
+
+			foreach ( $output as $line ) {
+				$line        = preg_replace( '/^(=\s)/i', '', $line );
+				$line        = preg_replace( '/^\s\s/i', '', $line );
+				$output_str .= $line . "\n";
+			}
+
+			wp_send_json_success( $output_str );
+		}
+	}
+
+	/**
+	 * Get output test (for testing purpose)
+	 *
+	 * @return void
+	 *
+	 * @throws Exception Exception.
+	 */
+	public function get_output_test() {
+		if ( ! Request::has( 'code' ) ) {
+			wp_send_json_success( '' );
 		}
 
-		file_put_contents( $query_file, '[]' );
-		file_put_contents( $tmp_file, '' );
+		$this->empty_tmp_files();
 
-		if ( ! wp_verify_nonce( Request::get( '_wpnonce' ), 'wp_tinker' ) ) {
+		if ( ! Helper::is_nonce_valid() ) {
 			wp_send_json_error( 'Nonce verification fail' );
 		}
 
-		if ( isset( $_POST['code'] ) ) {
-			$code = Request::get( 'code', '', 'sanitize_textarea_field' );
+		$input = Request::get( 'code', '', 'sanitize_textarea_field' );
 
-			if ( ! empty( $code ) ) {
-				if ( substr( trim( $code ), -1 ) !== ';' ) {
-					$code .= ';';
-				}
+		try {
+			$timer = microtime( true );
+			$input = $this->add_return_stmt( $input );
 
-				$code = $this->add_return_stmt( $code );
+			$callback      = 'SnapCode\Controllers\TinkerController::log_wp_query';
+			$add_filter    = "add_filter( 'log_query_custom_data','$callback', 10, 5 );";
+			$remove_filter = "remove_filter('log_query_custom_data', '$callback', 10, 5 );";
 
-				$output_str = '';
-				$bootstrap  = "require_once '$wp_load';";
-				$cmd        = "cat '$tmp_file' | '{$this->get_php_path()}' '$psysh_path'";
+			$input = $add_filter . "\n" . $input;
+			file_put_contents( $this->tmp_file, $input );
 
-				$callback      = 'SnapCode\Controllers\TinkerController::log_wp_query';
-				$add_filter    = "add_filter( 'log_query_custom_data',   '$callback', 10, 5 );";
-				$remove_filter = "remove_filter('log_query_custom_data', '$callback', 10, 5 );";
+			$output = new SnapCodeShellOutput( \Psy\Output\ShellOutput::VERBOSITY_NORMAL, true );
 
-				$file_content = $bootstrap . $add_filter . $code . $remove_filter;
-				file_put_contents( $tmp_file, $file_content );
+			$config = new \Psy\Configuration( array( 'configDir' => WP_CONTENT_DIR ) );
+			$config->setOutput( $output );
 
-				exec( "{$cmd} 2>&1", $output, $error );
+			$psysh = new \Psy\Shell( $config );
+			$psysh->setOutput( $output );
+			$psysh->addCode( $input );
 
-				if ( 0 !== $error ) {
-					$output   = array();
-					$output[] = $error;
-				}
+			ob_start( array( $psysh, 'writeStdout' ), 1 );
+			set_error_handler( array( $psysh, 'handleError' ) );
+			$_ = eval( $psysh->onExecute( $psysh->flushCode() ?: \Psy\ExecutionClosure::NOOP_INPUT ) );//phpcs:ignore
+			restore_error_handler();
 
-				foreach ( $output as $line ) {
-					$line        = preg_replace( '/^(=\s)/i', '', $line );
-					$line        = preg_replace( '/^\s\s/i', '', $line );
-					$output_str .= $line . "\n";
-				}
+			$psysh->setScopeVariables( get_defined_vars() );
+			$psysh->writeReturnValue( $_ );
 
-				wp_send_json_success( $output_str );
+			ob_end_flush();
+
+			if ( $output->exception ) {
+				throw $output->exception;
 			}
+
+			$execution_time = microtime( true ) - $timer;
+			if ( $execution_time < 1 ) {
+				$readable_time = number_format( $execution_time * 1000, 2 ) . ' ms';
+			} else {
+				$readable_time = number_format( $execution_time, 2 ) . ' sec';
+			}
+		} catch ( \Exception $e ) {
+			$output = $e->getMessage();
 		}
 
-		wp_send_json_success( '' );
+		$final_output = preg_replace( '/\e\[[0-9;]*m/', '', $output->output );
+		$final_output = preg_replace( '/^=\s/', '', $final_output );
+
+		wp_send_json_success( $final_output );
 	}
 
 	/**
@@ -202,7 +284,7 @@ class TinkerController {
 	 * @return void
 	 */
 	public function save_config() {
-		if ( ! wp_verify_nonce( Request::get( '_wpnonce_php_path' ), 'wp_tinker' ) ) {
+		if ( ! Helper::is_nonce_valid() ) {
 			wp_send_json(
 				array(
 					'success' => false,

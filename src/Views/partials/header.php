@@ -28,7 +28,7 @@ $php_path = TinkerController::get_php_path();
 		</div>
 		<div class="wp-tinker-config">
 			<div>
-				<input type="hidden" name="_wpnonce_php_path" value="<?php echo esc_attr( wp_create_nonce( 'wp_tinker' ) ); ?>">
+				<input type="hidden" name="_wpnonce" value="<?php echo esc_attr( wp_create_nonce( 'wp_snapcode' ) ); ?>">
 				<span>PHP Path</span> 
 				<input ng-model="phpPath" name="php-path" ng-init="phpPath='<?php echo esc_attr( $php_path ); ?>'" type="text">
 				<button type="button" ng-click="saveConfig(phpPath)" class="button button-secondary" ng-disabled="saving">{{saving? 'Saving...':'Save'}}</button>

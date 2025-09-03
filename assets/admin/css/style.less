@@ -25,6 +25,13 @@
   }
 }
 
+.updating-info {
+  color: green;
+  .dashicons-update {
+    animation: rotation 2s infinite linear;
+  }
+}
+
 .wptinker-wrapper {
   display: flex;
   height: 100%;
@@ -42,7 +49,7 @@
   #editor {
     position: absolute;
     width: 99%;
-    height: calc(100vh - 180px);
+    height: calc(100vh - 200px);
   }
 
   .snapcode_editor{
@@ -72,7 +79,7 @@
   .input textarea {
     background: #ddd;
     padding: 15px;
-    height: calc(100vh - 200px);
+    height: calc(100vh - 240px);
     resize: horizontal;
 
     &:focus {
