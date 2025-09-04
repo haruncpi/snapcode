@@ -22,6 +22,22 @@ class AdminMenu extends BasePlugin {
 	public function __construct() {
 		parent::__construct();
 		add_action( 'admin_menu', array( $this, 'add_admin_menu' ) );
+		add_filter( 'admin_footer_text', array( $this, 'change_admin_footer_text' ), 999 );
+	}
+
+	/**
+	 * Change admin footer text.
+	 *
+	 * @param string $text text.
+	 *
+	 * @return string
+	 */
+	public function change_admin_footer_text( $text ) {
+		if ( 'snapcode' === Request::get( 'page' ) ) {
+			return 'SnapCode - v' . SNAPCODE_VERSION;
+		}
+
+		return $text;
 	}
 
 	/**
