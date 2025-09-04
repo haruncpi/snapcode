@@ -82,7 +82,7 @@ class TinkerController {
 		if ( ! empty( $statements ) ) {
 			$last_statement = array_pop( $statements );
 			// Add return before last statement.
-			$statements[] = 'return ' . trim( $last_statement );
+			$statements[] = '$wp_snapcode = ' . trim( $last_statement );
 		}
 
 		// Recombine the statements.
@@ -131,6 +131,69 @@ class TinkerController {
 	}
 
 	/**
+	 * Get output by cmd.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param string $code code.
+	 *
+	 * @return string
+	 */
+	private function get_output_by_cmd( $code ) {
+		$php_path = Helper::get_option( 'phpPath', 'php' );
+		$cmd      = "cat '$this->tmp_file' | '{$php_path}' '$this->psysh_path'";
+		$output   = array();
+
+		try {
+			file_put_contents( $this->tmp_file, $code );
+			exec( "{$cmd} 2>&1", $output, $error );
+		} catch ( \Throwable $th ) {
+			$output = array( $th->getMessage() );
+		}
+
+		if ( 0 !== $error ) {
+			$output = array( $error );
+		}
+
+		return $this->prepare_output( $output );
+	}
+
+	/**
+	 * Get output by eval.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param string $code code.
+	 *
+	 * @return string
+	 */
+	private function get_output_by_eval( $code ) {
+		//phpcs:disabled
+		set_error_handler(
+			function( $errno, $errstr, $errfile, $errline ) {
+				echo "[Error] $errstr in $errfile:$errline\n";
+				return true; // prevent PHP default error handling.
+			}
+		);
+
+		$output = '';
+		ob_start();
+		try {
+			$_ = eval( $code );
+			print_r( $_ );
+			echo "\n";
+		} catch ( \Throwable $e ) {
+			echo '[Exception] ' . $e->getMessage() . "\n";
+		}
+		//phpcs:enabled
+
+		$output = ob_get_clean();
+
+		restore_error_handler();
+		return $output;
+	}
+
+	/**
 	 * Get output.
 	 *
 	 * @since 1.0.0
@@ -146,118 +209,36 @@ class TinkerController {
 			wp_send_json_success( '' );
 		}
 
-		$output     = array();
-		$output_str = '';
 		$code       = '';
+		$output_str = '';
 
 		$this->empty_tmp_files();
 
-		$code = Request::get( 'code', '', 'sanitize_textarea_field' );
-		if ( empty( $code ) ) {
+		$row_code = Request::get( 'code', '', 'sanitize_textarea_field' );
+		if ( empty( $row_code ) ) {
 			wp_send_json_success( '' );
 		}
 
-		if ( ! str_ends_with( $code, ';' ) ) {
-			$code .= ';';
+		if ( ! str_ends_with( $row_code, ';' ) ) {
+			$row_code .= ';';
 		}
 
-		$code = $this->add_return_stmt( $code );
+		$code = $this->add_return_stmt( $row_code );
 
-		$php_path   = Helper::get_option( 'phpPath', 'php' );
-		$output_str = '';
-		$bootstrap  = "require_once '$this->wp_load';";
-		$cmd        = "cat '$this->tmp_file' | '{$php_path}' '$this->psysh_path'";
+		$bootstrap          = "require_once '$this->wp_load';";
+		$callback           = 'SnapCode\Controllers\TinkerController::log_wp_query';
+		$add_filter         = "add_filter( 'log_query_custom_data',   '$callback', 10, 5 );";
+		$remove_filter      = "remove_filter('log_query_custom_data', '$callback', 10, 5 );";
+		$remove_all_queries = "remove_all_filters( 'log_query_custom_data' );";
+		$return_stmt        = 'return $wp_snapcode;';
 
-		$callback      = 'SnapCode\Controllers\TinkerController::log_wp_query';
-		$add_filter    = "add_filter( 'log_query_custom_data',   '$callback', 10, 5 );";
-		$remove_filter = "remove_filter('log_query_custom_data', '$callback', 10, 5 );";
+		$cmd_code   = $bootstrap . $add_filter . $code . $remove_filter . $return_stmt;
+		$output_str = $this->get_output_by_cmd( $cmd_code );
 
-		$file_content = $bootstrap . $add_filter . $code . $remove_filter;
-
-		try {
-			file_put_contents( $this->tmp_file, $file_content );
-			exec( "{$cmd} 2>&1", $output, $error );
-		} catch ( \Throwable $th ) {
-			$output = array( $th->getMessage() );
-		}
-
-		if ( 0 !== $error ) {
-			$output = array( $error );
-		}
-
-		$output_str = $this->prepare_output( $output );
+		$eval_code  = $add_filter . $code . $remove_filter . $return_stmt;
+		// $output_str = $this->get_output_by_eval( $eval_code );
 
 		wp_send_json_success( $output_str );
-	}
-
-	/**
-	 * Get output test (for testing purpose)
-	 *
-	 * @return void
-	 *
-	 * @throws Exception Exception.
-	 */
-	public function get_output_test() {
-		if ( ! Request::has( 'code' ) ) {
-			wp_send_json_success( '' );
-		}
-
-		$this->empty_tmp_files();
-
-		if ( ! Helper::is_nonce_valid() ) {
-			wp_send_json_error( 'Nonce verification fail' );
-		}
-
-		$input = Request::get( 'code', '', 'sanitize_textarea_field' );
-
-		try {
-			$timer = microtime( true );
-			$input = $this->add_return_stmt( $input );
-
-			$callback      = 'SnapCode\Controllers\TinkerController::log_wp_query';
-			$add_filter    = "add_filter( 'log_query_custom_data','$callback', 10, 5 );";
-			$remove_filter = "remove_filter('log_query_custom_data', '$callback', 10, 5 );";
-
-			$input = $add_filter . "\n" . $input;
-			file_put_contents( $this->tmp_file, $input );
-
-			$output = new SnapCodeShellOutput( \Psy\Output\ShellOutput::VERBOSITY_NORMAL, true );
-
-			$config = new \Psy\Configuration( array( 'configDir' => WP_CONTENT_DIR ) );
-			$config->setOutput( $output );
-
-			$psysh = new \Psy\Shell( $config );
-			$psysh->setOutput( $output );
-			$psysh->addCode( $input );
-
-			ob_start( array( $psysh, 'writeStdout' ), 1 );
-			set_error_handler( array( $psysh, 'handleError' ) );
-			$_ = eval( $psysh->onExecute( $psysh->flushCode() ?: \Psy\ExecutionClosure::NOOP_INPUT ) );//phpcs:ignore
-			restore_error_handler();
-
-			$psysh->setScopeVariables( get_defined_vars() );
-			$psysh->writeReturnValue( $_ );
-
-			ob_end_flush();
-
-			if ( $output->exception ) {
-				throw $output->exception;
-			}
-
-			$execution_time = microtime( true ) - $timer;
-			if ( $execution_time < 1 ) {
-				$readable_time = number_format( $execution_time * 1000, 2 ) . ' ms';
-			} else {
-				$readable_time = number_format( $execution_time, 2 ) . ' sec';
-			}
-		} catch ( \Exception $e ) {
-			$output = $e->getMessage();
-		}
-
-		$final_output = preg_replace( '/\e\[[0-9;]*m/', '', $output->output );
-		$final_output = preg_replace( '/^=\s/', '', $final_output );
-
-		wp_send_json_success( $final_output );
 	}
 
 	/**
