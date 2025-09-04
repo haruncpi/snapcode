@@ -242,6 +242,14 @@ myApp.controller("AppCtrl", function ($scope, $http) {
     return eval("0" + comparator + cmp);
   }
 
+  function toFormData(obj) {
+    let formData = new FormData();
+    for (let [key, val] of Object.entries(obj)) {
+      formData.append(key, val);
+    }
+    return formData;
+  }
+
   $scope.checkUpdate = function () {
     $http.get($scope.pluginInfo.updateUrl).success(function (res) {
       let newVersion = res.version;
@@ -265,6 +273,10 @@ myApp.controller("AppCtrl", function ($scope, $http) {
       slug: "ajax",
       action: "update-plugin",
       _ajax_nonce: _snapcode.pluginUpdateNonce,
+    };
+
+    let config = {
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
     };
 
     $scope.updating = true;
