@@ -8,9 +8,9 @@
 
 namespace SnapCode\Controllers;
 
+use SnapCode\Classes\Dumper;
 use SnapCode\Core\Request;
 use SnapCode\Helper;
-use SnapCode\Classes\SnapCodeShellOutput;
 
 /**
  * Class TinkerController
@@ -22,11 +22,12 @@ class TinkerController {
 	 * Define constant if not defined.
 	 */
 	public function __construct() {
-		$this->psysh_path = SNAPCODE_DIR . 'vendor/bin/psysh';
-		$this->tmp_dir    = SNAPCODE_DIR . 'tmp';
-		$this->tmp_file   = $this->tmp_dir . '/tmp.txt';
-		$this->query_file = $this->tmp_dir . '/query.json';
-		$this->wp_load    = ABSPATH . 'wp-load.php';
+		$this->psysh_path   = SNAPCODE_DIR . 'vendor/bin/psysh';
+		$this->tmp_dir      = SNAPCODE_DIR . 'tmp';
+		$this->tmp_file     = $this->tmp_dir . '/tmp.txt';
+		$this->query_file   = $this->tmp_dir . '/query.json';
+		$this->wp_load      = ABSPATH . 'wp-load.php';
+		$this->log_callback = 'SnapCode\Controllers\TinkerController::log_wp_query';
 
 		if ( ! defined( 'SAVEQUERIES' ) ) {
 			define( 'SAVEQUERIES', true );
@@ -34,13 +35,13 @@ class TinkerController {
 	}
 
 	/**
-	 * Add return statement to last line if not exist.
+	 * Prepare code to run.
 	 *
 	 * @param string $code code.
 	 *
 	 * @return string
 	 */
-	public function add_return_stmt( $code ) {
+	public function prepare_code( $code ) {
 		$tokens            = token_get_all( "<?php\n" . $code );
 		$output            = '';
 		$statements        = array();
@@ -82,7 +83,7 @@ class TinkerController {
 		if ( ! empty( $statements ) ) {
 			$last_statement = array_pop( $statements );
 			// Add return before last statement.
-			$statements[] = '$wp_snapcode = ' . trim( $last_statement );
+			$statements[] = '$__wp_snapcode = ' . trim( $last_statement );
 		}
 
 		// Recombine the statements.
@@ -140,9 +141,12 @@ class TinkerController {
 	 * @return string
 	 */
 	private function get_output_by_cmd( $code ) {
-		$php_path = Helper::get_option( 'phpPath', 'php' );
-		$cmd      = "cat '$this->tmp_file' | '{$php_path}' '$this->psysh_path'";
-		$output   = array();
+		$bootstrap = "require_once '$this->wp_load';";
+		$php_path  = Helper::get_option( 'phpPath', 'php' );
+		$cmd       = "cat '$this->tmp_file' | '{$php_path}' '$this->psysh_path'";
+		$output    = array();
+
+		$code = $bootstrap . $code;
 
 		try {
 			file_put_contents( $this->tmp_file, $code );
@@ -176,21 +180,19 @@ class TinkerController {
 			}
 		);
 
-		$output = '';
 		ob_start();
 		try {
-			$_ = eval( $code );
-			print_r( $_ );
+			Dumper::dump( eval( $code ) );
 			echo "\n";
 		} catch ( \Throwable $e ) {
 			echo '[Exception] ' . $e->getMessage() . "\n";
+		} finally {
+			remove_filter( 'log_query_custom_data', $this->log_callback );
 		}
 		//phpcs:enabled
-
-		$output = ob_get_clean();
-
 		restore_error_handler();
-		return $output;
+
+		return ob_get_clean();
 	}
 
 	/**
@@ -223,20 +225,14 @@ class TinkerController {
 			$row_code .= ';';
 		}
 
-		$code = $this->add_return_stmt( $row_code );
+		$code = $this->prepare_code( $row_code );
 
-		$bootstrap          = "require_once '$this->wp_load';";
-		$callback           = 'SnapCode\Controllers\TinkerController::log_wp_query';
-		$add_filter         = "add_filter( 'log_query_custom_data',   '$callback', 10, 5 );";
-		$remove_filter      = "remove_filter('log_query_custom_data', '$callback', 10, 5 );";
-		$remove_all_queries = "remove_all_filters( 'log_query_custom_data' );";
-		$return_stmt        = 'return $wp_snapcode;';
+		$add_filter    = "add_filter( 'log_query_custom_data', '{$this->log_callback}', 10, 5 );";
+		$remove_filter = "remove_filter( 'log_query_custom_data', '{$this->log_callback}' );";
+		$return_stmt   = 'return $__wp_snapcode;';
 
-		$cmd_code   = $bootstrap . $add_filter . $code . $remove_filter . $return_stmt;
-		$output_str = $this->get_output_by_cmd( $cmd_code );
-
-		$eval_code  = $add_filter . $code . $remove_filter . $return_stmt;
-		// $output_str = $this->get_output_by_eval( $eval_code );
+		$final_code = $add_filter . $code . $remove_filter . $return_stmt;
+		$output_str = $this->get_output_by_eval( $final_code );
 
 		wp_send_json_success( $output_str );
 	}
