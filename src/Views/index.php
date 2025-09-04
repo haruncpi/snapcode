@@ -8,11 +8,10 @@
  * @author Harun <harun.cox@gmail.com>
  */
 
-use SnapCode\Helper;
-
+defined( 'ABSPATH' ) || exit;
 ?>
 
-<?php require_once 'partials/header.php'; ?>
+<?php require_once 'header.php'; ?>
 	<div class="wptinker-wrapper">
 		<input type="hidden" name="_wpnonce" value="<?php echo esc_attr( wp_create_nonce( 'wp_snapcode' ) ); ?>">
 
@@ -35,9 +34,9 @@ use SnapCode\Helper;
 				<div ng-show="queries.length" ng-class="tab==='sql'?'active':''" ng-click="setTab('sql')">SQL ({{queries.length}})</div>
 			</div>
 
-			<pre ng-show="tab==='output'">{{output}}</pre>
+			<pre class="output-code" ng-show="tab==='output'">{{output}}</pre>
 			<!-- SQL query tab -->
-			<div ng-show="tab=== 'sql' && queries.length">
+			<div class="output-sql" ng-show="tab=== 'sql' && queries.length">
 				<div class="sql-query-wrapper" ng-repeat="row in queries track by $index">
 					<p class="query-info">
 						<span class="query-time">{{row.query_time|number:5}}</span>

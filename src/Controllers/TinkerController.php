@@ -108,6 +108,29 @@ class TinkerController {
 	}
 
 	/**
+	 * Prepare output.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param array $output output.
+	 *
+	 * @return string
+	 */
+	private function prepare_output( $output ) {
+		if ( empty( $output ) ) {
+			return '';
+		}
+
+		$output_str = '';
+		foreach ( $output as $line ) {
+			$line        = preg_replace( '/^(=\s)/i', '', $line );
+			$line        = preg_replace( '/^\s\s/i', '', $line );
+			$output_str .= $line . "\n";
+		}
+		return $output_str;
+	}
+
+	/**
 	 * Get output.
 	 *
 	 * @since 1.0.0
@@ -130,41 +153,41 @@ class TinkerController {
 		$this->empty_tmp_files();
 
 		$code = Request::get( 'code', '', 'sanitize_textarea_field' );
-
-		if ( ! empty( $code ) ) {
-			if ( substr( trim( $code ), -1 ) !== ';' ) {
-				$code .= ';';
-			}
-
-			$code = $this->add_return_stmt( $code );
-
-			$php_path   = Helper::get_option( 'phpPath', 'php' );
-			$output_str = '';
-			$bootstrap  = "require_once '$this->wp_load';";
-			$cmd        = "cat '$this->tmp_file' | '{$php_path}' '$this->psysh_path'";
-
-			$callback      = 'SnapCode\Controllers\TinkerController::log_wp_query';
-			$add_filter    = "add_filter( 'log_query_custom_data',   '$callback', 10, 5 );";
-			$remove_filter = "remove_filter('log_query_custom_data', '$callback', 10, 5 );";
-
-			$file_content = $bootstrap . $add_filter . $code . $remove_filter;
-			file_put_contents( $this->tmp_file, $file_content );
-
-			exec( "{$cmd} 2>&1", $output, $error );
-
-			if ( 0 !== $error ) {
-				$output   = array();
-				$output[] = $error;
-			}
-
-			foreach ( $output as $line ) {
-				$line        = preg_replace( '/^(=\s)/i', '', $line );
-				$line        = preg_replace( '/^\s\s/i', '', $line );
-				$output_str .= $line . "\n";
-			}
-
-			wp_send_json_success( $output_str );
+		if ( empty( $code ) ) {
+			wp_send_json_success( '' );
 		}
+
+		if ( ! str_ends_with( $code, ';' ) ) {
+			$code .= ';';
+		}
+
+		$code = $this->add_return_stmt( $code );
+
+		$php_path   = Helper::get_option( 'phpPath', 'php' );
+		$output_str = '';
+		$bootstrap  = "require_once '$this->wp_load';";
+		$cmd        = "cat '$this->tmp_file' | '{$php_path}' '$this->psysh_path'";
+
+		$callback      = 'SnapCode\Controllers\TinkerController::log_wp_query';
+		$add_filter    = "add_filter( 'log_query_custom_data',   '$callback', 10, 5 );";
+		$remove_filter = "remove_filter('log_query_custom_data', '$callback', 10, 5 );";
+
+		$file_content = $bootstrap . $add_filter . $code . $remove_filter;
+
+		try {
+			file_put_contents( $this->tmp_file, $file_content );
+			exec( "{$cmd} 2>&1", $output, $error );
+		} catch ( \Throwable $th ) {
+			$output = array( $th->getMessage() );
+		}
+
+		if ( 0 !== $error ) {
+			$output = array( $error );
+		}
+
+		$output_str = $this->prepare_output( $output );
+
+		wp_send_json_success( $output_str );
 	}
 
 	/**

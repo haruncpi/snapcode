@@ -10,7 +10,8 @@
 
 use SnapCode\Helper;
 
-$php_path = Helper::get_option( 'phpPath', '/opt/homebrew/bin/php' );
+$php_path         = Helper::get_option( 'phpPath', '/opt/homebrew/bin/php' );
+$full_screen_mode = Helper::get_option( 'fullScreenMode', false );
 ?>
 
 <style>
@@ -19,6 +20,13 @@ $php_path = Helper::get_option( 'phpPath', '/opt/homebrew/bin/php' );
 .notice, [ng\:cloak], [ng-cloak], [data-ng-cloak], [x-ng-cloak], .ng-cloak, .x-ng-cloak {
 		display: none !important;
 }
+
+<?php if ( $full_screen_mode ) : ?>
+/* hide admin menu and footer */
+#adminmenumain, #wpfooter, .notice, #tutor-page-wrap { display: none !important; }
+#wpcontent { margin: 0 !important; padding: 0 !important; }
+#wpbody-content { padding-bottom: 0px !important; float: none; }
+<?php endif; ?>
 </style>
 
 <div ng-app="myApp" ng-controller="AppCtrl" class="wp-tinker-app" ng-cloak>

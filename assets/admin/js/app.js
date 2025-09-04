@@ -94,6 +94,64 @@ myApp.controller("AppCtrl", function ($scope, $http) {
     }, 1000);
   }
 
+  function prettySql(query) {
+    if (!query) return "";
+
+    const strings = [];
+    let sql = query.replace(/'([^'\\]|\\.)*'/g, (m) => {
+      strings.push(m);
+      return `__STR${strings.length - 1}__`;
+    });
+
+    const KEYWORDS = [
+      "SELECT",
+      "FROM",
+      "WHERE",
+      "GROUP BY",
+      "ORDER BY",
+      "HAVING",
+      "LIMIT",
+      "OFFSET",
+      "JOIN",
+      "INNER JOIN",
+      "LEFT JOIN",
+      "RIGHT JOIN",
+      "FULL JOIN",
+      "CROSS JOIN",
+      "ON",
+      "UNION",
+      "UNION ALL",
+      "INTERSECT",
+      "EXCEPT",
+    ];
+
+    const kwPattern = new RegExp(
+      "(?<![\\w_])(" +
+        KEYWORDS.map((k) => k.replace(/\\s+/g, "\\s+")).join("|") +
+        ")(?![\\w_])",
+      "gi"
+    );
+
+    sql = sql
+      .replace(/\s+/g, " ")
+      .replace(kwPattern, "\n$1")
+      .replace(/\n{2,}/g, "\n")
+      .trim();
+
+    sql = sql
+      .split("\n")
+      .map((line) => {
+        const t = line.trim();
+        if (/^(AND|OR|ON)\b/i.test(t)) return " " + t;
+        return t;
+      })
+      .join("\n");
+
+    sql = sql.replace(/__STR(\d+)__/g, (_, i) => strings[Number(i)]);
+
+    return sql;
+  }
+
   $scope.openSettings = function () {
     let url = "#TB_inline?width=600&height=150&inlineId=snapcode-settings";
     tb_show("Settings", url, false);
@@ -101,7 +159,6 @@ myApp.controller("AppCtrl", function ($scope, $http) {
 
   $scope.saving = false;
   $scope.saveSettings = function (settings) {
-
     $scope.saving = true;
     let payload = {
       [nonceKey]: nonceValue,
@@ -113,23 +170,13 @@ myApp.controller("AppCtrl", function ($scope, $http) {
       headers: { "Content-Type": "application/x-www-form-urlencoded" },
     };
 
-    $http.post(_snapcode.ajaxUrl, Object.toparams(payload), config)
+    $http
+      .post(_snapcode.ajaxUrl, Object.toparams(payload), config)
       .success(function (res) {
         $scope.saving = false;
         tb_remove();
       });
   };
-
-  function prettySql(query) {
-    return query
-      .replace(/\s+/g, " ") // normalize whitespace
-      .replace(
-        /(SELECT|FROM|WHERE|GROUP BY|ORDER BY|LEFT JOIN|RIGHT JOIN|INNER JOIN|OUTER JOIN|JOIN|ON|AND|OR|LIMIT)/gi,
-        "\n$1"
-      )
-      .replace(/\n+/g, "\n") // remove duplicate newlines
-      .trim();
-  }
 
   function getOutput() {
     const code = editor.getSelectedText() || editor.getValue();
