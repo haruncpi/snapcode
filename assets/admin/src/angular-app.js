@@ -162,6 +162,8 @@ myApp.controller("AppCtrl", function ($scope, $http) {
       #adminmenumain, #wpfooter, .notice, #tutor-page-wrap { display: none !important; }
       #wpcontent { margin: 0 !important; padding: 0 !important; }
       #wpbody-content { padding-bottom: 0px !important; float: none; }
+      #wpadminbar { display: none !important; }
+      html { padding-top: 0 !important; }
   `;
 
   function maximizeScreen() {

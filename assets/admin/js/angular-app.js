@@ -1,1 +1,324 @@
-(()=>{var __webpack_modules__={159:(__unused_webpack_module,exports)=>{exports.compareVersion=function(v1,comparator,v2){"use strict";var comparator="="==comparator?"==":comparator;if(-1==["==","===","<","<=",">",">=","!=","!=="].indexOf(comparator))throw new Error("Invalid comparator. "+comparator);for(var v1parts=v1.split("."),v2parts=v2.split("."),maxLen=Math.max(v1parts.length,v2parts.length),part1,part2,cmp=0,i=0;i<maxLen&&!cmp;i++)part1=parseInt(v1parts[i],10)||0,part2=parseInt(v2parts[i],10)||0,part1<part2&&(cmp=1),part1>part2&&(cmp=-1);return eval("0"+comparator+cmp)},exports.textToJSON=function(e){const t={};return e.split("\n").forEach(e=>{const[n,o]=e.split(/:(.*)/s).map(e=>e.trim());n&&(t[n]=isNaN(o)?o:Number(o))}),t},exports.isValidJSON=function(e){try{return JSON.parse(e),!0}catch(e){return!1}},exports.toFormData=function(e){let t=new FormData;for(let[n,o]of Object.entries(e))t.append(n,o);return t},exports.prettySql=function(e){if(!e)return"";const t=[];let n=e.replace(/'([^'\\]|\\.)*'/g,e=>(t.push(e),`__STR${t.length-1}__`));const o=new RegExp("(?<![\\w_])("+["SELECT","FROM","WHERE","GROUP BY","ORDER BY","HAVING","LIMIT","OFFSET","JOIN","INNER JOIN","LEFT JOIN","RIGHT JOIN","FULL JOIN","CROSS JOIN","ON","UNION","UNION ALL","INTERSECT","EXCEPT"].map(e=>e.replace(/\\s+/g,"\\s+")).join("|")+")(?![\\w_])","gi");return n=n.replace(/\s+/g," ").replace(o,"\n$1").replace(/\n{2,}/g,"\n").trim(),n=n.split("\n").map(e=>{const t=e.trim();return/^(AND|OR|ON)\b/i.test(t)?" "+t:t}).join("\n"),n=n.replace(/__STR(\d+)__/g,(e,n)=>t[Number(n)]),n}}},__webpack_module_cache__={};function __webpack_require__(e){var t=__webpack_module_cache__[e];if(void 0!==t)return t.exports;var n=__webpack_module_cache__[e]={exports:{}};return __webpack_modules__[e](n,n.exports,__webpack_require__),n.exports}var __webpack_exports__={};const{compareVersion,toFormData,prettySql}=__webpack_require__(159);let myApp=angular.module("myApp",[]);myApp.controller("AppCtrl",function(e,t){const{nonceKey:n,nonceValue:o}=_snapcode;e.output="",e.tab="output",e.processing=!1,e.phpPath="";const a=localStorage.getItem("snapcode")?JSON.parse(localStorage.getItem("snapcode")):{};e.model={theme:a.theme?a.theme:"ace/theme/clouds",code:a.code?a.code:"new WP_User(1)"};const r=ace.edit("editor"),c=(ace.require("ace/ext/beautify"),ace.require("ace/ext/language_tools"),ace.require("ace/ext/themelist").themes);function p(){let e=document.getElementsByTagName("head")[0],t=document.createElement("style");t.id="full-screen-style",t.innerHTML="\n      #adminmenumain, #wpfooter, .notice, #tutor-page-wrap { display: none !important; }\n      #wpcontent { margin: 0 !important; padding: 0 !important; }\n      #wpbody-content { padding-bottom: 0px !important; float: none; }\n  ",e.appendChild(t)}function s(){let e=document.getElementById("full-screen-style");e&&e.parentNode.removeChild(e)}e.model.themes=c,r.container.classList.add("snapcode_editor"),r.setShowPrintMargin(!1),r.setOptions({fontFamily:"FiraCode",fontSize:"12pt"}),r.setTheme(e.model.theme),r.session.setMode({path:"ace/mode/php",inline:!0}),r.setValue(e.model.code),r.navigateFileEnd(),e.changeTheme=function(e){r.setTheme(e)},Object.toparams=function(e){var t=[];for(var n in e)t.push(n+"="+encodeURIComponent(e[n]));return t.join("&")},e.getOutput=function(){const a=r.getSelectedText()||r.getValue();let c={[n]:o,action:"snapcode_output",code:a};e.processing=!0,localStorage.setItem("snapcode",JSON.stringify({code:a})),t.post(_snapcode.ajaxUrl,Object.toparams(c),{headers:{"Content-Type":"application/x-www-form-urlencoded"}}).success(function(n){console.log(n),e.output=n.data,t.get(_snapcode.pluginUrl+"tmp/query.json").success(function(t){e.queries=t}),e.tab="output",e.processing=!1})},e.prettySql=prettySql,e.copy=function(e,t){let n=t.target,o=document.createElement("textarea");document.body.appendChild(o),o.value=e,o.select(),document.execCommand("copy"),document.body.removeChild(o),n.innerHTML="Copied!",n.style.backgroundColor="green",n.style.color="white",setTimeout(()=>{n.innerHTML="Copy",n.removeAttribute("style")},1e3)},e.queries=[],e.listenEvent=function(t){(t.ctrlKey&&13===t.keyCode||t.metaKey&&13===t.keyCode)&&e.getOutput(e.model)},e.setTab=function(t){e.tab=t},e.openSettings=function(){tb_show("Settings","#TB_inline?width=600&height=150&inlineId=snapcode-settings",!1)},e.saving=!1,e.saveSettings=function(a){e.saving=!0;let r={[n]:o,action:"snapcode_save_settings",settings:JSON.stringify(a)};t.post(_snapcode.ajaxUrl,Object.toparams(r),{headers:{"Content-Type":"application/x-www-form-urlencoded"}}).success(function(t){e.saving=!1,tb_remove()})},e.isFullScreen="true"===localStorage.getItem("snapcode-full-screen"),console.log(e.isFullScreen),e.isFullScreen?p():s(),e.toggleFullScreen=function(){e.isFullScreen?s():p(),e.isFullScreen=!e.isFullScreen,localStorage.setItem("snapcode-full-screen",e.isFullScreen)},e.pluginInfo={updateUrl:_snapcode.updateUrl,currentVersion:_snapcode.version,newVersion:null,updateAvailable:!1},e.checkUpdate=function(){t.get(e.pluginInfo.updateUrl).success(function(t){let n=t.version;e.pluginInfo.newVersion=n,e.pluginInfo.updateAvailable=compareVersion(e.pluginInfo.currentVersion,"<",n)})},e.checkUpdate(),e.updating=!1,e.updatePlugin=function(){let n={plugin:"ajax/ajax.php",slug:"ajax",action:"update-plugin",_ajax_nonce:_snapcode.pluginUpdateNonce};e.updating=!0,t.post(_snapcode.ajaxUrl,toFormData(n),{headers:{"Content-Type":"application/x-www-form-urlencoded"}}).success(function(t){e.updating=!1,t.success?window.location.reload():alert(t.data.errorMessage)})}})})();
+/******/ (() => { // webpackBootstrap
+/******/ 	var __webpack_modules__ = ({
+
+/***/ "./assets/admin/src/utils.js":
+/*!***********************************!*\
+  !*** ./assets/admin/src/utils.js ***!
+  \***********************************/
+/***/ ((__unused_webpack_module, exports) => {
+
+exports.compareVersion = function (v1, comparator, v2) {
+  "use strict";
+
+  var comparator = comparator == "=" ? "==" : comparator;
+  if (["==", "===", "<", "<=", ">", ">=", "!=", "!=="].indexOf(comparator) == -1) {
+    throw new Error("Invalid comparator. " + comparator);
+  }
+  var v1parts = v1.split("."),
+    v2parts = v2.split(".");
+  var maxLen = Math.max(v1parts.length, v2parts.length);
+  var part1, part2;
+  var cmp = 0;
+  for (var i = 0; i < maxLen && !cmp; i++) {
+    part1 = parseInt(v1parts[i], 10) || 0;
+    part2 = parseInt(v2parts[i], 10) || 0;
+    if (part1 < part2) cmp = 1;
+    if (part1 > part2) cmp = -1;
+  }
+  return eval("0" + comparator + cmp);
+};
+exports.textToJSON = function (text) {
+  const jsonObject = {};
+  const lines = text.split("\n");
+  lines.forEach(line => {
+    const [key, value] = line.split(/:(.*)/s).map(item => item.trim());
+    if (key) {
+      jsonObject[key] = isNaN(value) ? value : Number(value);
+    }
+  });
+  return jsonObject;
+};
+exports.isValidJSON = function (str) {
+  try {
+    JSON.parse(str);
+    return true;
+  } catch (e) {
+    return false;
+  }
+};
+exports.toFormData = function (obj) {
+  let formData = new FormData();
+  for (let [key, val] of Object.entries(obj)) {
+    formData.append(key, val);
+  }
+  return formData;
+};
+exports.prettySql = function (query) {
+  if (!query) return "";
+  const strings = [];
+  let sql = query.replace(/'([^'\\]|\\.)*'/g, m => {
+    strings.push(m);
+    return `__STR${strings.length - 1}__`;
+  });
+  const KEYWORDS = ["SELECT", "FROM", "WHERE", "GROUP BY", "ORDER BY", "HAVING", "LIMIT", "OFFSET", "JOIN", "INNER JOIN", "LEFT JOIN", "RIGHT JOIN", "FULL JOIN", "CROSS JOIN", "ON", "UNION", "UNION ALL", "INTERSECT", "EXCEPT"];
+  const kwPattern = new RegExp("(?<![\\w_])(" + KEYWORDS.map(k => k.replace(/\\s+/g, "\\s+")).join("|") + ")(?![\\w_])", "gi");
+  sql = sql.replace(/\s+/g, " ").replace(kwPattern, "\n$1").replace(/\n{2,}/g, "\n").trim();
+  sql = sql.split("\n").map(line => {
+    const t = line.trim();
+    if (/^(AND|OR|ON)\b/i.test(t)) return " " + t;
+    return t;
+  }).join("\n");
+  sql = sql.replace(/__STR(\d+)__/g, (_, i) => strings[Number(i)]);
+  return sql;
+};
+
+/***/ })
+
+/******/ 	});
+/************************************************************************/
+/******/ 	// The module cache
+/******/ 	var __webpack_module_cache__ = {};
+/******/ 	
+/******/ 	// The require function
+/******/ 	function __webpack_require__(moduleId) {
+/******/ 		// Check if module is in cache
+/******/ 		var cachedModule = __webpack_module_cache__[moduleId];
+/******/ 		if (cachedModule !== undefined) {
+/******/ 			return cachedModule.exports;
+/******/ 		}
+/******/ 		// Create a new module (and put it into the cache)
+/******/ 		var module = __webpack_module_cache__[moduleId] = {
+/******/ 			// no module.id needed
+/******/ 			// no module.loaded needed
+/******/ 			exports: {}
+/******/ 		};
+/******/ 	
+/******/ 		// Execute the module function
+/******/ 		__webpack_modules__[moduleId](module, module.exports, __webpack_require__);
+/******/ 	
+/******/ 		// Return the exports of the module
+/******/ 		return module.exports;
+/******/ 	}
+/******/ 	
+/************************************************************************/
+var __webpack_exports__ = {};
+// This entry needs to be wrapped in an IIFE because it needs to be isolated against other modules in the chunk.
+(() => {
+/*!*****************************************!*\
+  !*** ./assets/admin/src/angular-app.js ***!
+  \*****************************************/
+const {
+  compareVersion,
+  toFormData,
+  prettySql
+} = __webpack_require__(/*! ./utils */ "./assets/admin/src/utils.js");
+let myApp = angular.module("myApp", []);
+myApp.controller("AppCtrl", function ($scope, $http) {
+  const {
+    nonceKey,
+    nonceValue
+  } = _snapcode;
+  $scope.output = "";
+  $scope.tab = "output";
+  $scope.processing = false;
+  $scope.phpPath = "";
+  const snapcodeSavedData = localStorage.getItem("snapcode") ? JSON.parse(localStorage.getItem("snapcode")) : {};
+  $scope.model = {
+    theme: snapcodeSavedData.theme ? snapcodeSavedData.theme : "ace/theme/clouds",
+    code: snapcodeSavedData.code ? snapcodeSavedData.code : "new WP_User(1)"
+  };
+  const editor = ace.edit("editor");
+  const beautify = ace.require("ace/ext/beautify");
+  const langTools = ace.require("ace/ext/language_tools");
+  const themeList = ace.require("ace/ext/themelist").themes;
+  $scope.model.themes = themeList;
+  editor.container.classList.add("snapcode_editor");
+  editor.setShowPrintMargin(false);
+  editor.setOptions({
+    fontFamily: "FiraCode",
+    fontSize: "12pt"
+    // enableBasicAutocompletion: true,
+    // enableLiveAutocompletion: true,
+    // enableSnippets: true
+  });
+  editor.setTheme($scope.model.theme);
+  editor.session.setMode({
+    path: "ace/mode/php",
+    inline: true
+  });
+  editor.setValue($scope.model.code);
+  editor.navigateFileEnd();
+  // setTimeout(() => beautify.beautify(editor.session), 100)
+
+  $scope.changeTheme = function (theme) {
+    editor.setTheme(theme);
+  };
+  Object.toparams = function ObjecttoParams(obj) {
+    var p = [];
+    for (var key in obj) {
+      p.push(key + "=" + encodeURIComponent(obj[key]));
+    }
+    return p.join("&");
+  };
+  $scope.getOutput = getOutput;
+  $scope.prettySql = prettySql;
+  $scope.copy = copyToClipboard;
+  $scope.queries = [];
+  $scope.listenEvent = function ($event) {
+    if ($event.ctrlKey && $event.keyCode === 13 || $event.metaKey && $event.keyCode === 13) {
+      $scope.getOutput($scope.model);
+    }
+  };
+  $scope.setTab = function (tab) {
+    $scope.tab = tab;
+  };
+  function copyToClipboard(text, e) {
+    let el = e.target;
+    let dummy = document.createElement("textarea");
+    document.body.appendChild(dummy);
+    dummy.value = text;
+    dummy.select();
+    document.execCommand("copy");
+    document.body.removeChild(dummy);
+    el.innerHTML = "Copied!";
+    el.style.backgroundColor = "green";
+    el.style.color = "white";
+    setTimeout(() => {
+      el.innerHTML = "Copy";
+      el.removeAttribute("style");
+    }, 1000);
+  }
+  $scope.openSettings = function () {
+    let url = "#TB_inline?width=600&height=150&inlineId=snapcode-settings";
+    tb_show("Settings", url, false);
+  };
+  $scope.saving = false;
+  $scope.saveSettings = function (settings) {
+    $scope.saving = true;
+    let payload = {
+      [nonceKey]: nonceValue,
+      action: "snapcode_save_settings",
+      settings: JSON.stringify(settings)
+    };
+    let config = {
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded"
+      }
+    };
+    $http.post(_snapcode.ajaxUrl, Object.toparams(payload), config).success(function (res) {
+      $scope.saving = false;
+      tb_remove();
+    });
+  };
+  function getOutput() {
+    const code = editor.getSelectedText() || editor.getValue();
+    let payload = {
+      [nonceKey]: nonceValue,
+      action: "snapcode_output",
+      code: code
+    };
+    let config = {
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded"
+      }
+    };
+    $scope.processing = true;
+    localStorage.setItem("snapcode", JSON.stringify({
+      code: code
+    }));
+    $http.post(_snapcode.ajaxUrl, Object.toparams(payload), config).success(function (res) {
+      console.log(res);
+      $scope.output = res.data;
+      $http.get(_snapcode.pluginUrl + "tmp/query.json").success(function (data) {
+        $scope.queries = data;
+      });
+      $scope.tab = "output";
+      $scope.processing = false;
+    });
+  }
+
+  // save to local storage for full screen named snapcode-full-screen
+
+  $scope.isFullScreen = localStorage.getItem("snapcode-full-screen") === "true";
+  let fullScreenStyle = `
+      #adminmenumain, #wpfooter, .notice, #tutor-page-wrap { display: none !important; }
+      #wpcontent { margin: 0 !important; padding: 0 !important; }
+      #wpbody-content { padding-bottom: 0px !important; float: none; }
+      #wpadminbar { display: none !important; }
+      html { padding-top: 0 !important; }
+  `;
+  function maximizeScreen() {
+    let head = document.getElementsByTagName("head")[0];
+    let style = document.createElement("style");
+    style.id = "full-screen-style";
+    style.innerHTML = fullScreenStyle;
+    head.appendChild(style);
+  }
+  function minimizeScreen() {
+    let style = document.getElementById("full-screen-style");
+    if (style) {
+      style.parentNode.removeChild(style);
+    }
+  }
+  console.log($scope.isFullScreen);
+  $scope.isFullScreen ? maximizeScreen() : minimizeScreen();
+
+  // rewrite toggle full screen based on isFullScreen toggle the screen accordingly
+  $scope.toggleFullScreen = function () {
+    if ($scope.isFullScreen) {
+      minimizeScreen();
+    } else {
+      maximizeScreen();
+    }
+    $scope.isFullScreen = !$scope.isFullScreen;
+    localStorage.setItem("snapcode-full-screen", $scope.isFullScreen);
+  };
+
+  /**
+   * Update plugin
+   */
+  $scope.pluginInfo = {
+    updateUrl: _snapcode.updateUrl,
+    currentVersion: _snapcode.version,
+    newVersion: null,
+    updateAvailable: false
+  };
+  $scope.checkUpdate = function () {
+    $http.get($scope.pluginInfo.updateUrl).success(function (res) {
+      let newVersion = res.version;
+      $scope.pluginInfo.newVersion = newVersion;
+      $scope.pluginInfo.updateAvailable = compareVersion($scope.pluginInfo.currentVersion, "<", newVersion);
+      // $scope.pluginInfo.updateAvailable = true;
+    });
+  };
+  $scope.checkUpdate();
+  $scope.updating = false;
+  $scope.updatePlugin = function () {
+    let data = {
+      plugin: "ajax/ajax.php",
+      slug: "ajax",
+      action: "update-plugin",
+      _ajax_nonce: _snapcode.pluginUpdateNonce
+    };
+    let config = {
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded"
+      }
+    };
+    $scope.updating = true;
+    $http.post(_snapcode.ajaxUrl, toFormData(data), config).success(function (res) {
+      $scope.updating = false;
+      if (res.success) {
+        window.location.reload();
+      } else {
+        alert(res.data.errorMessage);
+      }
+    });
+  };
+  // End plugin update.
+});
+})();
+
+/******/ })()
+;
+//# sourceMappingURL=angular-app.js.map
