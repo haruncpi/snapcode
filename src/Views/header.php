@@ -19,6 +19,9 @@ $php_path = Helper::get_option( 'phpPath', '/opt/homebrew/bin/php' );
 .notice, [ng\:cloak], [ng-cloak], [data-ng-cloak], [x-ng-cloak], .ng-cloak, .x-ng-cloak {
 		display: none !important;
 }
+
+#adminmenu{overflow-y: auto!important;max-height: calc(100vh - 75px)!important;}
+#adminmenu::-webkit-scrollbar{width: 1px!important;}
 </style>
 
 <div ng-app="myApp" ng-controller="AppCtrl" class="wp-tinker-app" ng-cloak>

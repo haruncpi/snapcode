@@ -90,7 +90,8 @@
 .wptinker-wrapper .output .output-code,
 .wptinker-wrapper .output .output-sql {
   margin-top: 10px;
-  max-height: calc(100vh - 210px);
+  margin-bottom: 0;
+  max-height: calc(100vh - 235px);
   overflow: scroll;
 }
 .wptinker-wrapper .output .tabs {
