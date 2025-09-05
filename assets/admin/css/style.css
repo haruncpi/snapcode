@@ -18,6 +18,13 @@
 .wp-tinker-header .wp-tinker-config {
   display: flex;
   gap: 20px;
+  align-items: center;
+}
+.wp-tinker-header .wp-tinker-config .snapcode-icon-button {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  cursor: pointer;
 }
 .wp-tinker-header .wp-tinker-config .wp-tinker-update-info {
   display: flex;

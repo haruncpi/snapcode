@@ -175,6 +175,7 @@ class TinkerController {
 		//phpcs:disabled
 		set_error_handler(
 			function( $errno, $errstr, $errfile, $errline ) {
+				remove_filter( 'log_query_custom_data', $this->log_callback );
 				echo "[Error] $errstr in $errfile:$errline\n";
 				return true; // prevent PHP default error handling.
 			}

@@ -10,8 +10,7 @@
 
 use SnapCode\Helper;
 
-$php_path         = Helper::get_option( 'phpPath', '/opt/homebrew/bin/php' );
-$full_screen_mode = Helper::get_option( 'fullScreenMode', false );
+$php_path = Helper::get_option( 'phpPath', '/opt/homebrew/bin/php' );
 ?>
 
 <style>
@@ -20,13 +19,6 @@ $full_screen_mode = Helper::get_option( 'fullScreenMode', false );
 .notice, [ng\:cloak], [ng-cloak], [data-ng-cloak], [x-ng-cloak], .ng-cloak, .x-ng-cloak {
 		display: none !important;
 }
-
-<?php if ( $full_screen_mode ) : ?>
-/* hide admin menu and footer */
-#adminmenumain, #wpfooter, .notice, #tutor-page-wrap { display: none !important; }
-#wpcontent { margin: 0 !important; padding: 0 !important; }
-#wpbody-content { padding-bottom: 0px !important; float: none; }
-<?php endif; ?>
 </style>
 
 <div ng-app="myApp" ng-controller="AppCtrl" class="wp-tinker-app" ng-cloak>
@@ -47,7 +39,8 @@ $full_screen_mode = Helper::get_option( 'fullScreenMode', false );
 		</div>
 
 		<div class="wp-tinker-config">
-			<button ng-click="openSettings()" type="button" class="button button-default" style="line-height: 22px;"><span class="dashicons dashicons-admin-settings"></span> Settings</button>
+			<div class="snapcode-icon-button" ng-click="toggleFullScreen()"><span class="icon-frame"></span> {{isFullScreen? 'Minimize':'Maximize'}}</div>
+			<!-- <button ng-click="openSettings()" type="button" class="button button-default" style="line-height: 22px;"><span class="dashicons dashicons-admin-settings"></span> Settings</button> -->
 
 			<!-- update info -->
 			<div class="wp-tinker-update-info" ng-show="pluginInfo.updateAvailable">

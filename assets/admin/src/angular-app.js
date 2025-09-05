@@ -1,7 +1,9 @@
+const { compareVersion, toFormData, prettySql } = require("./utils");
+
 let myApp = angular.module("myApp", []);
 
 myApp.controller("AppCtrl", function ($scope, $http) {
-  const { nonceKey, nonceValue, ajaxUrl } = _snapcode;
+  const { nonceKey, nonceValue } = _snapcode;
 
   $scope.output = "";
   $scope.tab = "output";
@@ -94,64 +96,6 @@ myApp.controller("AppCtrl", function ($scope, $http) {
     }, 1000);
   }
 
-  function prettySql(query) {
-    if (!query) return "";
-
-    const strings = [];
-    let sql = query.replace(/'([^'\\]|\\.)*'/g, (m) => {
-      strings.push(m);
-      return `__STR${strings.length - 1}__`;
-    });
-
-    const KEYWORDS = [
-      "SELECT",
-      "FROM",
-      "WHERE",
-      "GROUP BY",
-      "ORDER BY",
-      "HAVING",
-      "LIMIT",
-      "OFFSET",
-      "JOIN",
-      "INNER JOIN",
-      "LEFT JOIN",
-      "RIGHT JOIN",
-      "FULL JOIN",
-      "CROSS JOIN",
-      "ON",
-      "UNION",
-      "UNION ALL",
-      "INTERSECT",
-      "EXCEPT",
-    ];
-
-    const kwPattern = new RegExp(
-      "(?<![\\w_])(" +
-        KEYWORDS.map((k) => k.replace(/\\s+/g, "\\s+")).join("|") +
-        ")(?![\\w_])",
-      "gi"
-    );
-
-    sql = sql
-      .replace(/\s+/g, " ")
-      .replace(kwPattern, "\n$1")
-      .replace(/\n{2,}/g, "\n")
-      .trim();
-
-    sql = sql
-      .split("\n")
-      .map((line) => {
-        const t = line.trim();
-        if (/^(AND|OR|ON)\b/i.test(t)) return " " + t;
-        return t;
-      })
-      .join("\n");
-
-    sql = sql.replace(/__STR(\d+)__/g, (_, i) => strings[Number(i)]);
-
-    return sql;
-  }
-
   $scope.openSettings = function () {
     let url = "#TB_inline?width=600&height=150&inlineId=snapcode-settings";
     tb_show("Settings", url, false);
@@ -210,6 +154,46 @@ myApp.controller("AppCtrl", function ($scope, $http) {
       });
   }
 
+  // save to local storage for full screen named snapcode-full-screen
+
+  $scope.isFullScreen = localStorage.getItem("snapcode-full-screen") === "true";
+
+  let fullScreenStyle = `
+      #adminmenumain, #wpfooter, .notice, #tutor-page-wrap { display: none !important; }
+      #wpcontent { margin: 0 !important; padding: 0 !important; }
+      #wpbody-content { padding-bottom: 0px !important; float: none; }
+  `;
+
+  function maximizeScreen() {
+    let head = document.getElementsByTagName("head")[0];
+    let style = document.createElement("style");
+    style.id = "full-screen-style";
+    style.innerHTML = fullScreenStyle;
+    head.appendChild(style);
+  }
+
+  function minimizeScreen() {
+    let style = document.getElementById("full-screen-style");
+    if (style) {
+      style.parentNode.removeChild(style);
+    }
+  }
+
+  console.log($scope.isFullScreen)
+  $scope.isFullScreen ? maximizeScreen() : minimizeScreen();
+
+  // rewrite toggle full screen based on isFullScreen toggle the screen accordingly
+  $scope.toggleFullScreen = function () {
+    if ($scope.isFullScreen) {
+      minimizeScreen();
+    } else {
+      maximizeScreen();
+    }
+
+    $scope.isFullScreen = !$scope.isFullScreen;
+    localStorage.setItem("snapcode-full-screen", $scope.isFullScreen);
+  };
+
   /**
    * Update plugin
    */
@@ -219,36 +203,6 @@ myApp.controller("AppCtrl", function ($scope, $http) {
     newVersion: null,
     updateAvailable: false,
   };
-
-  function compareVersion(v1, comparator, v2) {
-    "use strict";
-    var comparator = comparator == "=" ? "==" : comparator;
-    if (
-      ["==", "===", "<", "<=", ">", ">=", "!=", "!=="].indexOf(comparator) == -1
-    ) {
-      throw new Error("Invalid comparator. " + comparator);
-    }
-    var v1parts = v1.split("."),
-      v2parts = v2.split(".");
-    var maxLen = Math.max(v1parts.length, v2parts.length);
-    var part1, part2;
-    var cmp = 0;
-    for (var i = 0; i < maxLen && !cmp; i++) {
-      part1 = parseInt(v1parts[i], 10) || 0;
-      part2 = parseInt(v2parts[i], 10) || 0;
-      if (part1 < part2) cmp = 1;
-      if (part1 > part2) cmp = -1;
-    }
-    return eval("0" + comparator + cmp);
-  }
-
-  function toFormData(obj) {
-    let formData = new FormData();
-    for (let [key, val] of Object.entries(obj)) {
-      formData.append(key, val);
-    }
-    return formData;
-  }
 
   $scope.checkUpdate = function () {
     $http.get($scope.pluginInfo.updateUrl).success(function (res) {
