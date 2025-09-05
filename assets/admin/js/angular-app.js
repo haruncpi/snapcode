@@ -113,7 +113,7 @@ const {
   prettySql
 } = __webpack_require__(/*! ./utils */ "./assets/admin/src/utils.js");
 let myApp = angular.module("myApp", []);
-myApp.controller("AppCtrl", function ($scope, $http) {
+myApp.controller("AppCtrl", function ($scope, $http, $sce) {
   const {
     nonceKey,
     nonceValue
@@ -228,7 +228,7 @@ myApp.controller("AppCtrl", function ($scope, $http) {
     }));
     $http.post(_snapcode.ajaxUrl, Object.toparams(payload), config).success(function (res) {
       console.log(res);
-      $scope.output = res.data;
+      $scope.output = $sce.trustAsHtml(res.data);
       $http.get(_snapcode.pluginUrl + "tmp/query.json").success(function (data) {
         $scope.queries = data;
       });

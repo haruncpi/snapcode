@@ -34,7 +34,7 @@ defined( 'ABSPATH' ) || exit;
 				<div ng-show="queries.length" ng-class="tab==='sql'?'active':''" ng-click="setTab('sql')">SQL ({{queries.length}})</div>
 			</div>
 
-			<pre class="output-code" ng-show="tab==='output'">{{output}}</pre>
+			<pre class="output-code" ng-show="tab==='output'" ng-bind-html="output"></pre>
 			<!-- SQL query tab -->
 			<div class="output-sql" ng-show="tab=== 'sql' && queries.length">
 				<div class="sql-query-wrapper" ng-repeat="row in queries track by $index">

@@ -2,7 +2,7 @@ const { compareVersion, toFormData, prettySql } = require("./utils");
 
 let myApp = angular.module("myApp", []);
 
-myApp.controller("AppCtrl", function ($scope, $http) {
+myApp.controller("AppCtrl", function ($scope, $http, $sce ) {
   const { nonceKey, nonceValue } = _snapcode;
 
   $scope.output = "";
@@ -141,7 +141,7 @@ myApp.controller("AppCtrl", function ($scope, $http) {
       .post(_snapcode.ajaxUrl, Object.toparams(payload), config)
       .success(function (res) {
         console.log(res);
-        $scope.output = res.data;
+        $scope.output = $sce.trustAsHtml(res.data);
 
         $http
           .get(_snapcode.pluginUrl + "tmp/query.json")

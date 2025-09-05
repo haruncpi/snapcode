@@ -176,7 +176,7 @@ class TinkerController {
 		set_error_handler(
 			function( $errno, $errstr, $errfile, $errline ) {
 				remove_filter( 'log_query_custom_data', $this->log_callback );
-				echo "[Error] $errstr in $errfile:$errline\n";
+				echo "<span style=\"color: red;\">[Error] </span> {$errstr} in {$errfile}:{$errline}\n";
 				return true; // prevent PHP default error handling.
 			}
 		);
@@ -186,7 +186,7 @@ class TinkerController {
 			Dumper::dump( eval( $code ) );
 			echo "\n";
 		} catch ( \Throwable $e ) {
-			echo '[Exception] ' . $e->getMessage() . "\n";
+			echo '<span style="color: red;">[Exception] </span>' . $e->getMessage() . "\n";
 		} finally {
 			remove_filter( 'log_query_custom_data', $this->log_callback );
 		}
