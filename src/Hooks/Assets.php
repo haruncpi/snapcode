@@ -33,6 +33,9 @@ class Assets extends BasePlugin {
 			return;
 		}
 
+		wp_enqueue_script( 'thickbox' );
+		wp_enqueue_style( 'thickbox' );
+
 		wp_enqueue_style( 'snapcode-simple-line-icons', 'https://cdnjs.cloudflare.com/ajax/libs/simple-line-icons/2.5.5/css/simple-line-icons.min.css', array(), $this->plugin_version );
 		wp_enqueue_style( 'snapcode-admin-css', $this->asset_url . '/admin/css/style.css', array(), $this->plugin_version );
 		wp_enqueue_script( 'snapcode-ace', $this->asset_url . '/admin/libs/ace/src-min/ace.js', array(), $this->plugin_version, true );
