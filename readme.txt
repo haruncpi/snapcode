@@ -3,8 +3,8 @@ Contributors: haruncpi
 Donate link: https://github.com/haruncpi
 Tags: snapcode,wp tinker,php,developer,wp fiddle,code runner,wp runner
 Requires at least: 5.3
-Tested up to: 6.4
-Stable tag: 1.0.7
+Tested up to: 6.8
+Stable tag: 1.1.0
 Requires PHP: 7.4
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -42,6 +42,12 @@ e.g.
 
 
 == Changelog ==
+
+= 1.1.0 - September 13, 2025
+
+Update: UI and UX improvements
+Update: Performance improvements
+Fix: Miscellaneous fixes
 
 = 1.0.7 - September 4, 2025
 

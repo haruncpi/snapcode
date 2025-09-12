@@ -41,6 +41,7 @@ const buildFiles = [
     '!./assets/**/*.less',
     '!./assets/**/*.scss',
     '!./vendor/pest-plugins.json',
+    '!webpack.config.js',
 
 
     '!./tmp/**',
