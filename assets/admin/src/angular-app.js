@@ -2,7 +2,7 @@ const { compareVersion, toFormData, prettySql } = require("./utils");
 
 let myApp = angular.module("myApp", []);
 
-myApp.controller("AppCtrl", function ($scope, $http, $sce ) {
+myApp.controller("AppCtrl", function ($scope, $http, $sce) {
   const { nonceKey, nonceValue } = _snapcode;
 
   $scope.output = "";
@@ -65,13 +65,12 @@ myApp.controller("AppCtrl", function ($scope, $http, $sce ) {
   $scope.queries = [];
 
   $scope.listenEvent = function ($event) {
-    if (
-      ($event.ctrlKey && $event.keyCode === 13) ||
-      ($event.metaKey && $event.keyCode === 13)
-    ) {
-      $scope.getOutput($scope.model);
+    if (($event.ctrlKey || $event.metaKey) && $event.keyCode === 13) {
+      $scope.getOutput();
     }
   };
+
+  document.addEventListener("keydown", $scope.listenEvent);
 
   $scope.setTab = function (tab) {
     $scope.tab = tab;
@@ -96,9 +95,9 @@ myApp.controller("AppCtrl", function ($scope, $http, $sce ) {
     }, 1000);
   }
 
-  $scope.openSettings = function () {
-    let url = "#TB_inline?width=600&height=150&inlineId=snapcode-settings";
-    tb_show("Settings", url, false);
+  $scope.openInfo = function () {
+    let url = "#TB_inline?width=400&height=175&inlineId=snapcode-info";
+    tb_show("SnapCode", url, false);
   };
 
   $scope.saving = false;
@@ -140,14 +139,9 @@ myApp.controller("AppCtrl", function ($scope, $http, $sce ) {
     $http
       .post(_snapcode.ajaxUrl, Object.toparams(payload), config)
       .success(function (res) {
-        console.log(res);
-        $scope.output = $sce.trustAsHtml(res.data);
-
-        $http
-          .get(_snapcode.pluginUrl + "tmp/query.json")
-          .success(function (data) {
-            $scope.queries = data;
-          });
+        $scope.outputResponse = res;
+        $scope.output = res.success ? res.data : $sce.trustAsHtml(res.message);
+        $scope.queries = res.queries;
 
         $scope.tab = "output";
         $scope.processing = false;
@@ -181,7 +175,7 @@ myApp.controller("AppCtrl", function ($scope, $http, $sce ) {
     }
   }
 
-  console.log($scope.isFullScreen)
+  console.log($scope.isFullScreen);
   $scope.isFullScreen ? maximizeScreen() : minimizeScreen();
 
   // rewrite toggle full screen based on isFullScreen toggle the screen accordingly

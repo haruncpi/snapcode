@@ -25,16 +25,20 @@ $php_path = Helper::get_option( 'phpPath', '/opt/homebrew/bin/php' );
 </style>
 
 <div ng-app="myApp" ng-controller="AppCtrl" class="wp-tinker-app" ng-cloak>
-	<!-- global settings -->
-	<div id="snapcode-settings" style="display: none;">
-		<div class="snapcode-settings-content">
-			<p><strong>PHP Path</strong></p>
-			<input ng-model="settings.phpPath" name="php-path" ng-init="settings.phpPath='<?php echo esc_attr( $php_path ); ?>'" type="text">
-			<br>
-			<button ng-click="saveSettings(settings)" ng-disabled="saving" type="button" class="button button-primary btn-snapcode-save-settings">{{saving? 'Saving...':'Save'}}</button>
-		</div>
+	<!-- snapcode info -->
+	<div id="snapcode-info" style="display: none;">
+		<p>
+			<span class="icon-tag"></span> Version: <strong>v<?php echo esc_html( SNAPCODE_VERSION ); ?></strong><br>
+			<span class="icon-user"></span> Author: <a target="_blank" href="https://github.com/haruncpi">Harun Ur Rashid</a><br>
+		</p>
+
+		<p class="snapcode-support-text"><span class="icon-heart"></span> Support this plugin by</p>
+		<ul class="snapcode-support-list">
+			<li><span class="icon-check"></span> Giving a GitHub star <a target="_blank" href="https://github.com/haruncpi/snapcode">here</a></li>
+			<li><span class="icon-check"></span> Buy me a coffee <a target="_blank" href="https://www.buymeacoffee.com/haruncpi">here</a></li>
+		</ul>
 	</div>
-	<!-- end global settings -->
+	<!-- end snapcode info -->
 
 	<div class="wp-tinker-header">
 		<div class="snapcode-title">
@@ -42,8 +46,8 @@ $php_path = Helper::get_option( 'phpPath', '/opt/homebrew/bin/php' );
 		</div>
 
 		<div class="wp-tinker-config">
+			<div class="snapcode-icon-button" ng-click="openInfo()"><span class="icon-info"></span> Info</div>
 			<div class="snapcode-icon-button" ng-click="toggleFullScreen()"><span class="icon-frame"></span> {{isFullScreen? 'Minimize':'Maximize'}}</div>
-			<!-- <button ng-click="openSettings()" type="button" class="button button-default" style="line-height: 22px;"><span class="dashicons dashicons-admin-settings"></span> Settings</button> -->
 
 			<!-- update info -->
 			<div class="wp-tinker-update-info" ng-show="pluginInfo.updateAvailable">

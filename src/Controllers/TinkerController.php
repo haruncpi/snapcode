@@ -172,9 +172,11 @@ class TinkerController {
 	 * @return string
 	 */
 	private function get_output_by_eval( $code ) {
+		$has_error = false;
 		//phpcs:disabled
 		set_error_handler(
-			function( $errno, $errstr, $errfile, $errline ) {
+			function( $errno, $errstr, $errfile, $errline ) use ( &$has_error ) {
+				$has_error = true;
 				remove_filter( 'log_query_custom_data', $this->log_callback );
 				echo "<span style=\"color: red;\">[Error] </span> {$errstr} in {$errfile}:{$errline}\n";
 				return true; // prevent PHP default error handling.
@@ -186,6 +188,7 @@ class TinkerController {
 			Dumper::dump( eval( $code ) );
 			echo "\n";
 		} catch ( \Throwable $e ) {
+			$has_error = true;
 			echo '<span style="color: red;">[Exception] </span>' . $e->getMessage() . "\n";
 		} finally {
 			remove_filter( 'log_query_custom_data', $this->log_callback );
@@ -193,7 +196,7 @@ class TinkerController {
 		//phpcs:enabled
 		restore_error_handler();
 
-		return ob_get_clean();
+		return array( $has_error, ob_get_clean() );
 	}
 
 	/**
@@ -204,12 +207,19 @@ class TinkerController {
 	 * @return void
 	 */
 	public function get_output() {
+		$response = array(
+			'success' => false,
+			'message' => null,
+			'data'    => array(),
+		);
+
 		if ( ! Helper::is_nonce_valid() ) {
-			wp_send_json_error( 'Nonce verification fail' );
+			$response['message'] = 'Nonce verification fail';
+			wp_send_json( $response );
 		}
 
 		if ( ! Request::has( 'code' ) ) {
-			wp_send_json_success( '' );
+			wp_send_json( $response );
 		}
 
 		$code       = '';
@@ -228,14 +238,48 @@ class TinkerController {
 
 		$code = $this->prepare_code( $row_code );
 
-		$add_filter    = "add_filter( 'log_query_custom_data', '{$this->log_callback}', 10, 5 );";
-		$remove_filter = "remove_filter( 'log_query_custom_data', '{$this->log_callback}' );";
-		$return_stmt   = 'return $__wp_snapcode;';
+		try {
+			$start_time = microtime( true );
 
-		$final_code = $add_filter . $code . $remove_filter . $return_stmt;
-		$output_str = $this->get_output_by_eval( $final_code );
+			$add_filter    = "add_filter( 'log_query_custom_data', '{$this->log_callback}', 10, 5 );";
+			$remove_filter = "remove_filter( 'log_query_custom_data', '{$this->log_callback}' );";
+			$return_stmt   = 'return $__wp_snapcode;';
 
-		wp_send_json_success( $output_str );
+			$final_code = $add_filter . $code . $remove_filter . $return_stmt;
+
+			list( $has_error, $output_str ) = $this->get_output_by_eval( $final_code );
+
+			// make times are human readable and with unit.
+			$end_time                = microtime( true );
+			$response['performance'] = array(
+				'execution_time' => number_format( ( $end_time - $start_time ) * 1000, 3 ) . ' ms',
+			);
+
+			$query_file = $this->query_file;
+			if ( file_exists( $query_file ) ) {
+				$queries    = json_decode( file_get_contents( $query_file ) );
+				$query_time = 0;
+				foreach ( $queries as $query ) {
+					$query_time += $query->query_time;
+				}
+
+				$response['performance']['query_time'] = number_format( $query_time * 1000, 3 ) . ' ms';
+				$response['queries']                   = is_array( $queries ) ? $queries : array();
+			}
+
+			if ( $has_error ) {
+				$response['success'] = false;
+				$response['message'] = $output_str;
+			} else {
+				$response['success'] = true;
+				$response['data']    = $output_str;
+			}
+		} catch ( \Throwable $th ) {
+			$response['success'] = false;
+			$response['message'] = $th->getMessage();
+		}
+
+		wp_send_json( $response );
 	}
 
 	/**

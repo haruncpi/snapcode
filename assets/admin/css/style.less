@@ -5,33 +5,67 @@
   src: url("../fonts/FiraCode-Regular.ttf") format("truetype");
 }
 
-.wp-tinker-header{
+@contentHeight: calc(100vh - 185px);
+
+.toplevel_page_snapcode {
+  #wpbody-content {
+    padding-bottom: 0 !important;
+  }
+  #wpfooter {
+    display: none;
+  }
+}
+
+#TB_ajaxContent{
+  a{
+    text-decoration: none;
+  }
+}
+.snapcode-support-text{
+  padding-bottom: 0 !important;
+  font-weight: 500;
+  span.icon-heart{
+    color: red;
+  }
+}
+
+.snapcode-support-list{
+  margin-bottom: 0;
+  li span.icon-check{
+    color: green;
+  }
+}
+
+.wp-tinker-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   box-sizing: border-box;
   padding: 10px 25px;
   border-bottom: 1px dotted #888;
+  background-color: white;
 
-  .snapcode-title{
-    h2{
+  .snapcode-title {
+    h2 {
       margin: 10px 0;
     }
   }
 
-  .wp-tinker-config{
+ 
+
+  .wp-tinker-config {
     display: flex;
     gap: 20px;
     align-items: center;
 
-    .snapcode-icon-button{
+    .snapcode-icon-button {
       display: flex;
       gap: 6px;
       align-items: center;
       cursor: pointer;
     }
 
-    .wp-tinker-update-info{
+    .wp-tinker-update-info {
       display: flex;
       align-items: center;
       gap: 10px;
@@ -46,13 +80,17 @@
   }
 }
 
+.btn-snapcode-run {
+  background-color: royalblue !important;
+}
+
 .wptinker-wrapper {
   display: flex;
   height: 100%;
   box-sizing: border-box;
   padding: 10px 25px;
 
-  #theme-selector{
+  #theme-selector {
     position: absolute;
     right: 75px;
     top: 13px;
@@ -62,32 +100,32 @@
 
   #editor {
     position: absolute;
-    width: 99%;
-    height: calc(100vh - 200px);
+    width: 100%;
+    height: @contentHeight;
   }
 
-  .snapcode_editor{
+  .snapcode_editor {
     // background: #e3e4e3!important;
-    .ace_content{
+    .ace_content {
       padding-top: 10px;
     }
-    .ace_gutter{
+    .ace_gutter {
       padding-top: 10px;
       // background: antiquewhite;
     }
   }
 
+  .input-header,
+  .output-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin: 10px 0;
+  }
+
   .input {
     min-width: 50%;
     position: relative;
-    button {
-      position: absolute;
-      top: 13px;
-      right: 5px;
-      background: #ffc107;
-      color: black;
-      border-color: #9b886c;
-    }
   }
 
   .input textarea {
@@ -105,19 +143,24 @@
     flex-grow: 1;
     margin-left: 20px;
     overflow: auto;
+    position: relative;
+
+    .snapcode-performance {
+      color: #888;
+    }
 
     .output-code,
     .output-sql {
       margin-top: 10px;
       margin-bottom: 0;
-      max-height: calc( 100vh - 235px );
+      max-height: @contentHeight;
       overflow: scroll;
     }
 
     .tabs {
       display: flex;
       gap: 10px;
-      margin-top: 13px;
+      // justify-content: flex-end;
 
       > div {
         padding: 6px 8px;
@@ -166,15 +209,15 @@
   }
 }
 
-.snapcode-settings-content{
-  p{
+.snapcode-settings-content {
+  p {
     margin-bottom: 2px;
   }
-  input{
+  input {
     width: 100%;
   }
 
-  .btn-snapcode-save-settings{
+  .btn-snapcode-save-settings {
     margin-top: 24px;
     float: right;
   }

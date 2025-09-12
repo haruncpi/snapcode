@@ -4,6 +4,28 @@
   font-style: normal;
   src: url("../fonts/FiraCode-Regular.ttf") format("truetype");
 }
+.toplevel_page_snapcode #wpbody-content {
+  padding-bottom: 0 !important;
+}
+.toplevel_page_snapcode #wpfooter {
+  display: none;
+}
+#TB_ajaxContent a {
+  text-decoration: none;
+}
+.snapcode-support-text {
+  padding-bottom: 0 !important;
+  font-weight: 500;
+}
+.snapcode-support-text span.icon-heart {
+  color: red;
+}
+.snapcode-support-list {
+  margin-bottom: 0;
+}
+.snapcode-support-list li span.icon-check {
+  color: green;
+}
 .wp-tinker-header {
   display: flex;
   justify-content: space-between;
@@ -11,6 +33,7 @@
   box-sizing: border-box;
   padding: 10px 25px;
   border-bottom: 1px dotted #888;
+  background-color: white;
 }
 .wp-tinker-header .snapcode-title h2 {
   margin: 10px 0;
@@ -37,6 +60,9 @@
 .updating-info .dashicons-update {
   animation: rotation 2s infinite linear;
 }
+.btn-snapcode-run {
+  background-color: royalblue !important;
+}
 .wptinker-wrapper {
   display: flex;
   height: 100%;
@@ -52,8 +78,8 @@
 }
 .wptinker-wrapper #editor {
   position: absolute;
-  width: 99%;
-  height: calc(100vh - 200px);
+  width: 100%;
+  height: calc(100vh - 185px);
 }
 .wptinker-wrapper .snapcode_editor .ace_content {
   padding-top: 10px;
@@ -61,17 +87,16 @@
 .wptinker-wrapper .snapcode_editor .ace_gutter {
   padding-top: 10px;
 }
+.wptinker-wrapper .input-header,
+.wptinker-wrapper .output-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 10px 0;
+}
 .wptinker-wrapper .input {
   min-width: 50%;
   position: relative;
-}
-.wptinker-wrapper .input button {
-  position: absolute;
-  top: 13px;
-  right: 5px;
-  background: #ffc107;
-  color: black;
-  border-color: #9b886c;
 }
 .wptinker-wrapper .input textarea {
   background: #ddd;
@@ -86,18 +111,21 @@
   flex-grow: 1;
   margin-left: 20px;
   overflow: auto;
+  position: relative;
+}
+.wptinker-wrapper .output .snapcode-performance {
+  color: #888;
 }
 .wptinker-wrapper .output .output-code,
 .wptinker-wrapper .output .output-sql {
   margin-top: 10px;
   margin-bottom: 0;
-  max-height: calc(100vh - 235px);
+  max-height: calc(100vh - 185px);
   overflow: scroll;
 }
 .wptinker-wrapper .output .tabs {
   display: flex;
   gap: 10px;
-  margin-top: 13px;
 }
 .wptinker-wrapper .output .tabs > div {
   padding: 6px 8px;

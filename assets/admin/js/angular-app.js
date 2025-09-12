@@ -165,10 +165,11 @@ myApp.controller("AppCtrl", function ($scope, $http, $sce) {
   $scope.copy = copyToClipboard;
   $scope.queries = [];
   $scope.listenEvent = function ($event) {
-    if ($event.ctrlKey && $event.keyCode === 13 || $event.metaKey && $event.keyCode === 13) {
-      $scope.getOutput($scope.model);
+    if (($event.ctrlKey || $event.metaKey) && $event.keyCode === 13) {
+      $scope.getOutput();
     }
   };
+  document.addEventListener("keydown", $scope.listenEvent);
   $scope.setTab = function (tab) {
     $scope.tab = tab;
   };
@@ -188,9 +189,9 @@ myApp.controller("AppCtrl", function ($scope, $http, $sce) {
       el.removeAttribute("style");
     }, 1000);
   }
-  $scope.openSettings = function () {
-    let url = "#TB_inline?width=600&height=150&inlineId=snapcode-settings";
-    tb_show("Settings", url, false);
+  $scope.openInfo = function () {
+    let url = "#TB_inline?width=400&height=175&inlineId=snapcode-info";
+    tb_show("SnapCode", url, false);
   };
   $scope.saving = false;
   $scope.saveSettings = function (settings) {
@@ -227,11 +228,9 @@ myApp.controller("AppCtrl", function ($scope, $http, $sce) {
       code: code
     }));
     $http.post(_snapcode.ajaxUrl, Object.toparams(payload), config).success(function (res) {
-      console.log(res);
-      $scope.output = $sce.trustAsHtml(res.data);
-      $http.get(_snapcode.pluginUrl + "tmp/query.json").success(function (data) {
-        $scope.queries = data;
-      });
+      $scope.outputResponse = res;
+      $scope.output = res.success ? res.data : $sce.trustAsHtml(res.message);
+      $scope.queries = res.queries;
       $scope.tab = "output";
       $scope.processing = false;
     });

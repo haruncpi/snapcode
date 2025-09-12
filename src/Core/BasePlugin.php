@@ -55,7 +55,7 @@ class BasePlugin {
 		$this->plugin_version = SNAPCODE_VERSION;
 		$this->plugin_file    = SNAPCODE_FILE;
 		$this->plugin_dir     = SNAPCODE_DIR;
-		$this->view_dir       = $this->plugin_dir . '/src/Views';
+		$this->view_dir       = $this->plugin_dir . '/views';
 		$this->asset_url      = SNAPCODE_URL . 'assets';
 	}
 }
