@@ -15,7 +15,7 @@ try {
     versionNumber = data.match(/Version:\s*([\d.]+)/i)?.[1] || '';
 } catch (err) { }
 
-const zipName = `${pluginName}.zip`;
+const zipName = `${pluginName}-${versionNumber}.zip`;
 const buildDest = './build';
 const buildFiles = [
     './**/*',
@@ -69,7 +69,7 @@ const makePod = (cb) => {
     }
 }
 
-const build = cb => src(buildFiles).pipe(dest(buildDest))
+const build = cb => src(buildFiles).pipe(dest(`${buildDest}/${pluginName}`))
 const buildZip = cb => src(`${buildDest}/**/*`).pipe(zip(zipName)).pipe(dest('./'))
 
 
