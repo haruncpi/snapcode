@@ -18,3 +18,10 @@ Run WordPress code instantly without a code editor
 
 **Download Plugin**
 [WP SnapCode](https://github.com/haruncpi/snapcode/releases)
+
+** Why Isn’t This on WordPress.org?
+At this point, you might wonder: “If it’s so useful, why can’t I just install it from the plugin directory?”
+
+Good question — and the answer is policy, not quality. The official WordPress.org plugin team no longer allows plugins that let you run arbitrary PHP code from inside the admin for security reasons. There is an older plugin named WP-Console that still exists because it was added before these restrictions came into effect, but new submissions with similar functionality are no longer accepted.
+
+That’s why *SnapCode* is hosted on GitHub — being open-source ensures full transparency.
