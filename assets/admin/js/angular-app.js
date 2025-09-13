@@ -294,14 +294,15 @@ myApp.controller("AppCtrl", function ($scope, $http, $sce) {
   $scope.updating = false;
   $scope.updatePlugin = function () {
     let data = {
-      plugin: "ajax/ajax.php",
-      slug: "ajax",
+      plugin: "snapcode/snapcode.php",
+      slug: "snapcode",
       action: "update-plugin",
       _ajax_nonce: _snapcode.pluginUpdateNonce
     };
     let config = {
+      transformRequest: angular.identity,
       headers: {
-        "Content-Type": "application/x-www-form-urlencoded"
+        "Content-Type": undefined
       }
     };
     $scope.updating = true;
