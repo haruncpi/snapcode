@@ -1,5 +1,4 @@
 {
-  "landingPage": "/wp-admin/admin.php?page=snapcode",
   "steps": [
     {
       "step": "installPlugin",
@@ -11,6 +10,14 @@
     {
       "step": "activatePlugin",
       "pluginFile": "snapcode/snapcode.php"
+    },
+    {
+      "step": "runPHP",
+      "code": "<?php sleep(1); ?>"
+    },
+    {
+      "step": "openUrl",
+      "url": "/wp-admin/admin.php?page=snapcode"
     }
   ]
 }
