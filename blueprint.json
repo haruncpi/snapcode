@@ -8,8 +8,8 @@
       }
     },
     {
-      "step": "openUrl",
-      "url": "/wp-admin/admin.php?page=snapcode"
+      "step": "navigate",
+      "path": "/wp-admin/admin.php?page=snapcode"
     }
   ]
 }
