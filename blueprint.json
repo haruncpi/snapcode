@@ -1,4 +1,5 @@
 {
+  "landingPage": "/wp-admin/",
   "steps": [
     {
       "step": "installPlugin",
@@ -6,10 +7,6 @@
         "resource": "url",
         "url": "https://github.com/haruncpi/snapcode/releases/download/v1.1.2/snapcode-1.1.2.zip"
       }
-    },
-    {
-      "step": "navigate",
-      "path": "/wp-admin/admin.php?page=snapcode"
     }
   ]
 }
