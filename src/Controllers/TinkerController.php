@@ -246,8 +246,6 @@ class TinkerController {
 
 			$final_code = $add_filter . $code . $remove_filter . $return_stmt;
 
-			// file_put_contents( $this->tmp_file, $final_code );
-
 			$start_time                     = microtime( true );
 			list( $has_error, $output_str ) = $this->get_output_by_eval( $final_code );
 
