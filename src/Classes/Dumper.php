@@ -41,8 +41,15 @@ class Dumper {
 				break;
 
 			case 'object':
-				$id    = spl_object_id( $value );
-				$props = get_object_vars( $value );
+				$id      = spl_object_id( $value );
+				$reflect = new \ReflectionObject($value);
+				$props   = [];
+
+				foreach ( $reflect->getProperties() as $prop ) {
+					$prop->setAccessible( true );
+					$props[ $prop->getName() ] = $prop->getValue( $value );
+				}
+
 				if ( empty( $props ) ) {
 					echo "{#{$id}}";
 					return;
