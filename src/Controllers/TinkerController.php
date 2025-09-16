@@ -35,6 +35,31 @@ class TinkerController {
 	}
 
 	/**
+	 * Check if a PHP statement is safe to assign to a variable.
+	 *
+	 * @param string $statement statement.
+	 *
+	 * @return bool
+	 */
+	private function is_assignable( string $statement ): bool {
+		// If ends with block close, function, or control keywords – not assignable.
+		$non_assignable_patterns = array(
+			'/^\s*(return|echo|exit|die|throw|if|while|for|foreach|switch|case|break|continue)\b/i',
+			'/^\s*}/',  // just closing bracket.
+			'/^\s*\)/', // closing parenthesis alone.
+		);
+
+		foreach ( $non_assignable_patterns as $pattern ) {
+			if ( preg_match( $pattern, $statement ) ) {
+				return false;
+			}
+		}
+
+		// Otherwise assume assignable expression.
+		return true;
+	}
+
+	/**
 	 * Prepare code to run.
 	 *
 	 * @param string $code code.
@@ -42,53 +67,30 @@ class TinkerController {
 	 * @return string
 	 */
 	public function prepare_code( $code ) {
-		$tokens            = token_get_all( "<?php\n" . $code );
-		$output            = '';
-		$statements        = array();
-		$current_statement = '';
-		$in_function_chain = false;
+		$variable_assigned = false;
+		$code              = trim( $code );
 
-		foreach ( $tokens as $token ) {
-			if ( is_array( $token ) ) {
-				$current_statement .= $token[1];
-			} else {
-				$current_statement .= $token;
-			}
-
-			// Detect function chaining with '->'.
-			if ( '->' === $token ) {
-				$in_function_chain = true;
-			}
-
-			// Complete a statement if it's not in a function chain and ends with a semicolon.
-			if ( ! $in_function_chain && ';' === $token ) {
-				$statements[]      = $current_statement;
-				$current_statement = '';
-			}
-
-			// End of function chain on semicolon.
-			if ( $in_function_chain && ';' === $token ) {
-				$in_function_chain = false;
-				$statements[]      = $current_statement;
-				$current_statement = '';
+		// Split into lines and get last non-empty line.
+		$lines     = preg_split( '/\r\n|\r|\n/', $code );
+		$last_line = '';
+		while ( ! empty( $lines ) ) {
+			$last_line = trim( array_pop( $lines ) );
+			if ( '' !== $last_line ) {
+				break;
 			}
 		}
 
-		// Add any remaining partial statement.
-		if ( ! empty( $current_statement ) ) {
-			$statements[] = $current_statement;
+		// Check if last line is assignable.
+		if ( $this->is_assignable( $last_line ) ) {
+			$last_line         = '$__wp_snapcode = ' . rtrim( $last_line, ';' ) . ';';
+			$variable_assigned = true;
 		}
 
-		// Insert 'return' before the last statement.
-		if ( ! empty( $statements ) ) {
-			$last_statement = array_pop( $statements );
-			// Add return before last statement.
-			$statements[] = '$__wp_snapcode = ' . trim( $last_statement );
-		}
+		// Rebuild code.
+		$lines[] = $last_line;
+		$code    = implode( "\n", $lines );
 
-		// Recombine the statements.
-		$output = implode( "\n", $statements );
-		return str_replace( '<?php', '', $output );
+		return array( $variable_assigned, str_replace( '<?php', '', $code ) );
 	}
 
 
@@ -222,12 +224,11 @@ class TinkerController {
 			wp_send_json( $response );
 		}
 
-		$code       = '';
 		$output_str = '';
 
 		$this->empty_tmp_files();
 
-		$row_code = Request::get( 'code', '', 'sanitize_textarea_field' );
+		$row_code = wp_unslash( $_POST['code'] ?? '' ); //phpcs:ignore
 		if ( empty( $row_code ) ) {
 			wp_send_json_success( '' );
 		}
@@ -236,17 +237,18 @@ class TinkerController {
 			$row_code .= ';';
 		}
 
-		$code = $this->prepare_code( $row_code );
+		list( $variable_assigned, $code ) = $this->prepare_code( $row_code );
 
 		try {
-			$start_time = microtime( true );
-
 			$add_filter    = "add_filter( 'log_query_custom_data', '{$this->log_callback}', 10, 5 );";
 			$remove_filter = "remove_filter( 'log_query_custom_data', '{$this->log_callback}' );";
-			$return_stmt   = 'return $__wp_snapcode;';
+			$return_stmt   = $variable_assigned ? 'return $__wp_snapcode;' : '';
 
 			$final_code = $add_filter . $code . $remove_filter . $return_stmt;
 
+			// file_put_contents( $this->tmp_file, $final_code );
+
+			$start_time                     = microtime( true );
 			list( $has_error, $output_str ) = $this->get_output_by_eval( $final_code );
 
 			// make times are human readable and with unit.
