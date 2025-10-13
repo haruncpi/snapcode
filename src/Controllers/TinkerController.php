@@ -247,12 +247,16 @@ class TinkerController {
 			$final_code = $add_filter . $code . $remove_filter . $return_stmt;
 
 			$start_time                     = microtime( true );
+			$start_memory                   = memory_get_usage();
 			list( $has_error, $output_str ) = $this->get_output_by_eval( $final_code );
 
 			// make times are human readable and with unit.
 			$end_time                = microtime( true );
+			$end_memory              = memory_get_usage();
+			$memory_used             = $end_memory - $start_memory;
 			$response['performance'] = array(
-				'execution_time' => number_format( ( $end_time - $start_time ) * 1000, 3 ) . ' ms',
+				'execution_time' => number_format( ( $end_time - $start_time ) * 1000, 3 ) . ' MS',
+				'memory_usage'   => number_format( $memory_used / 1048576, 3 ) . ' MB',
 			);
 
 			$query_file = $this->query_file;

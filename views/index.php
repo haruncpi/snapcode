@@ -39,7 +39,7 @@ defined( 'ABSPATH' ) || exit;
 				</div>
 
 				<div class="snapcode-performance">
-					<span ng-if="tab==='output' && outputResponse.performance.execution_time">Execution Time: {{outputResponse.performance.execution_time}}</span>
+					<span ng-if="tab==='output' && outputResponse.performance.execution_time">Time: {{outputResponse.performance.execution_time}} | Memory: {{outputResponse.performance.memory_usage}}</span>
 					<span ng-if="tab==='sql'">Query Time: {{outputResponse.performance.query_time}}</span>
 				</div>
 			</div>
