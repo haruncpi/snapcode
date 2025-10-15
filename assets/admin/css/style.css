@@ -101,7 +101,6 @@
 .wptinker-wrapper .input textarea {
   background: #ddd;
   padding: 15px;
-  height: calc(100vh - 240px);
   resize: horizontal;
 }
 .wptinker-wrapper .input textarea:focus {
@@ -162,6 +161,22 @@
 .wptinker-wrapper .output pre,
 .wptinker-wrapper .input textarea {
   font-family: "FiraCode" !important;
+}
+.wptinker-wrapper.horizontal {
+  flex-direction: column;
+}
+.wptinker-wrapper.horizontal #editor,
+.wptinker-wrapper.horizontal .input {
+  height: calc(100vh - 500px);
+  width: 100%;
+}
+.wptinker-wrapper.horizontal .output {
+  margin-left: 0;
+  margin-top: 60px;
+}
+.wptinker-wrapper.horizontal .output .output-code,
+.wptinker-wrapper.horizontal .output .output-sql {
+  max-height: calc(100vh - 560px);
 }
 .snapcode-settings-content p {
   margin-bottom: 2px;

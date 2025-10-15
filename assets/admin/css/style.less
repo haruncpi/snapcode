@@ -131,7 +131,7 @@
   .input textarea {
     background: #ddd;
     padding: 15px;
-    height: calc(100vh - 240px);
+    // height: calc(100vh - 240px);
     resize: horizontal;
 
     &:focus {
@@ -206,6 +206,22 @@
   .output pre,
   .input textarea {
     font-family: "FiraCode" !important;
+  }
+
+  &.horizontal{
+    flex-direction: column;
+    #editor,.input {
+      height: calc(100vh - 500px);
+      width: 100%;
+    }
+    .output{
+      margin-left: 0;
+      margin-top: 60px;
+
+      .output-code,.output-sql{
+        max-height: calc(100vh - 560px);
+      }
+    }
   }
 }
 

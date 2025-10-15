@@ -12,9 +12,8 @@ defined( 'ABSPATH' ) || exit;
 ?>
 
 <?php require_once 'header.php'; ?>
-	<div class="wptinker-wrapper">
-		<input type="hidden" name="_wpnonce" value="<?php echo esc_attr( wp_create_nonce( 'wp_snapcode' ) ); ?>">
-
+	<input type="hidden" name="_wpnonce" value="<?php echo esc_attr( wp_create_nonce( 'wp_snapcode' ) ); ?>">
+	<div class="wptinker-wrapper" ng-class="screenMode === 'horizontal' ? 'horizontal':''">
 		<div class="input">
 			<div class="input-header">
 				<div>Write Code</div>

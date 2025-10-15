@@ -47,6 +47,7 @@ $php_path = Helper::get_option( 'phpPath', '/opt/homebrew/bin/php' );
 
 		<div class="wp-tinker-config">
 			<div class="snapcode-icon-button" ng-click="openInfo()"><span class="icon-info"></span> Info</div>
+			<div class="snapcode-icon-button" ng-click="toggleScreenMode()"><span class="icon-directions"></span> {{screenMode==='horizontal'?'Vertical':'Horizontal'}}</div>
 			<div class="snapcode-icon-button" ng-click="toggleFullScreen()"><span class="icon-frame"></span> {{isFullScreen? 'Minimize':'Maximize'}}</div>
 
 			<!-- update info -->
