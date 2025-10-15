@@ -5,7 +5,7 @@
       "step": "installPlugin",
       "pluginData": {
         "resource": "url",
-        "url": "https://github.com/haruncpi/snapcode/releases/download/v1.1.3/snapcode-1.1.3.zip"
+        "url": "https://github.com/haruncpi/snapcode/releases/download/v1.2.0/snapcode-1.2.0.zip"
       }
     }
   ]
