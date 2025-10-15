@@ -4,7 +4,7 @@ Donate link: https://github.com/haruncpi
 Tags: snapcode,wp tinker,php,developer,wp fiddle,code runner,wp runner
 Requires at least: 5.3
 Tested up to: 6.8
-Stable tag: 1.1.3
+Stable tag: 1.2.0
 Requires PHP: 7.4
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -42,6 +42,12 @@ e.g.
 
 
 == Changelog ==
+
+= 1.2.0 - October 15, 2025
+
+New: Vertical and horizontal screen mode.
+Update: Add memory usage reporting to performance output.
+Fix: minor fixes and improvements.
 
 = 1.1.3 - September 16, 2025
 

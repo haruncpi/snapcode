@@ -32,8 +32,11 @@ myApp.controller("AppCtrl", function ($scope, $http, $sce) {
     : 'vertical';
 
   $scope.toggleScreenMode = function () {
-    $scope.screenMode = $scope.screenMode === 'horizontal' ? 'vertical' : 'horizontal';
-    localStorage.setItem("screenMode", $scope.screenMode);
+    document.startViewTransition(function(){
+      $scope.screenMode = $scope.screenMode === 'horizontal' ? 'vertical' : 'horizontal';
+      localStorage.setItem("screenMode", $scope.screenMode);
+      $scope.$apply();
+    })
   }
 
   editor.container.classList.add("snapcode_editor");

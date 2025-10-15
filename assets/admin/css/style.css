@@ -65,6 +65,7 @@
 }
 .wptinker-wrapper {
   display: flex;
+  transition: flex-direction 0.5s ease;
   height: 100%;
   box-sizing: border-box;
   padding: 10px 25px;
@@ -97,20 +98,14 @@
 .wptinker-wrapper .input {
   min-width: 50%;
   position: relative;
-}
-.wptinker-wrapper .input textarea {
-  background: #ddd;
-  padding: 15px;
-  resize: horizontal;
-}
-.wptinker-wrapper .input textarea:focus {
-  box-shadow: none;
+  view-transition-name: input;
 }
 .wptinker-wrapper .output {
   flex-grow: 1;
   margin-left: 20px;
   overflow: auto;
   position: relative;
+  view-transition-name: output;
 }
 .wptinker-wrapper .output .snapcode-performance {
   color: #888;
@@ -177,6 +172,11 @@
 .wptinker-wrapper.horizontal .output .output-code,
 .wptinker-wrapper.horizontal .output .output-sql {
   max-height: calc(100vh - 560px);
+}
+::view-transition-group(input),
+::view-transition-group(output) {
+  animation-duration: 0.5s;
+  animation-timing-function: ease-in-out;
 }
 .snapcode-settings-content p {
   margin-bottom: 2px;
